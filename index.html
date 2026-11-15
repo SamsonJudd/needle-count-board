@@ -70,9 +70,16 @@ input[type=number]{font-size:22px;font-weight:600;max-width:160px}
 .hand-actions{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px;align-items:center}
 
 .cart{display:grid;grid-template-columns:1fr 1fr;gap:7px}
-.pk{display:flex;align-items:stretch;justify-content:flex-start;gap:0;padding:0;text-align:left;min-height:54px;overflow:hidden;border-radius:8px;border:1px solid var(--line2);background:#fbfaf7;width:100%}
+.pk{display:flex;align-items:stretch;justify-content:flex-start;gap:0;padding:0;text-align:left;min-height:50px;overflow:hidden;border-radius:8px;border:1px solid var(--line2);background:#fbfaf7;width:100%}
 .pk:hover{background:#f4f2ec;border-color:#a9b1bc}
-.pk.inhand{outline:3px solid var(--accent);outline-offset:-2px}
+.pk:disabled{opacity:.42;cursor:default;background:#fbfaf7;border-color:var(--line2)}
+.pk.ask{border-color:var(--accent);box-shadow:0 0 0 3px var(--accent);background:#fff;animation:askpulse 1.6s ease-in-out infinite}
+.pk.ask:hover{background:#eef4ff}
+@keyframes askpulse{50%{box-shadow:0 0 0 3px var(--accent),0 0 0 8px rgba(42,99,214,.18)}}
+.coach{display:flex;gap:9px;align-items:flex-start;background:#fff8dc;border:1px solid #e6cf7a;color:#4d3d00;border-radius:10px;padding:10px 13px;font-size:15px;line-height:1.35}
+.coach .ico{flex:none;margin-top:2px}
+.rq .primary{width:100%}
+.row.nt{grid-template-columns:minmax(0,1fr) auto 34px}
 .pk-band{width:8px;flex:none}
 .pk-body{display:flex;flex-direction:column;justify-content:center;gap:5px;padding:7px 10px;flex:1;min-width:0}
 .pk-top{display:flex;align-items:center;justify-content:space-between;gap:8px;min-width:0}
@@ -100,6 +107,7 @@ input[type=number]{font-size:22px;font-weight:600;max-width:160px}
 .pend-note .ico{flex:none}
 .mini{font-size:13px;margin-top:8px}
 .log-title{font-size:13px;color:var(--muted);margin:0 0 6px;font-weight:550}
+.log-title.wait{color:#f6b93b;font-weight:650}
 .handoff-note{display:flex;gap:8px;align-items:flex-start;background:var(--accent-bg);border:1px solid var(--accent-line);color:var(--accent-text);border-radius:8px;padding:9px 11px;font-size:14px;margin:0 0 8px}
 .handoff-note .ico{flex:none;margin-top:2px}
 .row{display:grid;grid-template-columns:46px minmax(0,1fr) auto 34px;align-items:center;gap:10px;padding:8px 8px;border-bottom:1px solid var(--line);font-size:15px}
@@ -126,8 +134,8 @@ input[type=number]{font-size:22px;font-weight:600;max-width:160px}
 .pend-tag{font-size:11px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;display:flex;flex-wrap:wrap;gap:4px 8px;align-items:center}
 .pend-tag .w{text-transform:none;letter-spacing:0;font-weight:500;opacity:.85}
 .pend-n{font-size:26px;font-weight:700;color:#4a2d00;font-variant-numeric:tabular-nums}
-.pend-actions{display:grid;grid-template-columns:1.3fr 1fr 1fr;gap:8px;margin-top:10px}
-.pend-actions.two{grid-template-columns:1.3fr 1fr}
+.pend-actions{display:grid;grid-template-columns:1.4fr 1fr;gap:8px;margin-top:10px}
+.pend-actions.one{grid-template-columns:1fr}
 .pend-actions button{background:#fff}
 .conf{display:inline-flex;align-items:center;gap:7px}
 .conf-bars{display:inline-flex;gap:2px;align-items:flex-end;flex:none}
@@ -283,13 +291,22 @@ details{margin-top:16px}
 summary{cursor:pointer;font-weight:600}
 .logtable{border-collapse:collapse;width:100%;font-size:12.5px;margin-top:8px}
 .logtable td,.logtable th{padding:4px 6px;border-bottom:1px solid #eef0f3;text-align:left;vertical-align:top}
+.demobar{display:flex;align-items:center;justify-content:space-between;gap:10px 16px;flex-wrap:wrap;padding:6px 20px;background:#fdf1d3;color:#5b4300;border-bottom:1px solid #e9cf8a;font-size:13px}
+.demobar b{font-weight:700}
+.demo-acts{display:flex;gap:6px;flex-wrap:wrap}
+.demobar button{min-height:30px;padding:3px 10px;font-size:13px;background:#fffaf0;border-color:#d9bd72;color:#5b4300;white-space:nowrap}
+.demobar button:hover{background:#fff}
+.demo-box{margin-top:16px;padding:14px 16px;border:1px dashed var(--line2);border-radius:10px;display:flex;flex-direction:column;gap:12px}
+.demo-box p{margin:3px 0 0}
+.demo-btns{display:flex;gap:8px;flex-wrap:wrap}
+.demo-btns button{white-space:nowrap}
 .foot{text-align:center;padding:6px 0 18px}
 .foot button{min-height:auto;padding:4px 10px;font-size:12px;color:var(--faint)}
 @media (max-width:1100px){.b-main{grid-template-columns:260px minmax(0,1fr)}}
 @media (max-width:1000px){.work{grid-template-columns:1fr}.b-main{grid-template-columns:1fr}.big-num{font-size:84px}.cmp{grid-template-columns:1fr}}
 @media (max-width:560px){.opts{grid-template-columns:1fr 1fr}.cart{grid-template-columns:1fr}.card{padding:22px 18px}.lk{grid-template-columns:1fr 1fr}.lk>div{grid-column:1/-1}}
-@media (max-height:820px) and (min-width:1001px){.rq-done{display:none}.rq-text{font-size:17px;margin:3px 0 6px}.hand-empty{padding:3px 0}.cart{gap:5px}.pk{min-height:46px}.pk-body{padding:4px 10px;gap:3px}.work .col:first-child>.panel{padding:9px 13px}}
-@media (prefers-reduced-motion:reduce){.cam-reading,.dark .pend.late{animation:none}}
+@media (max-height:820px) and (min-width:1001px){.rq-done{display:none}.rq-text{font-size:17px;margin:3px 0 6px}.cart{gap:5px}.pk{min-height:46px}.pk-body{padding:4px 10px;gap:3px}.work .col:first-child>.panel{padding:9px 13px}}
+@media (prefers-reduced-motion:reduce){.cam-reading,.dark .pend.late,.pk.ask{animation:none}}
 </style>
 </head>
 <body>
@@ -327,7 +344,7 @@ var SCEN = {
     label: 'Practice', initial: 8, practice: true,
     steps: [
       { who: 'Scrub nurse', text: 'Can I get a 2-0 Vicryl?', items: ['v20'] },
-      { who: 'Surgeon', text: '4-0 Prolene, double-armed, please.', items: ['p40da'], pause: 4500 }
+      { who: 'Surgeon', text: '4-0 Prolene, double-armed, please.', items: ['p40da'], pause: 5000 }
     ]
   },
   s1: {
@@ -336,14 +353,9 @@ var SCEN = {
       { who: 'Scrub nurse', text: 'Can I get a 2-0 Vicryl?', items: ['v20'] },
       { who: 'Surgeon', text: '3-0 Monocryl, double-armed, please.', items: ['m30da'] },
       { who: 'Scrub nurse', text: 'I need a 4-0 Monocryl and a 3-0 Vicryl.', items: ['m40', 'v30'], interrupt: true },
-      { who: 'Surgeon', text: 'Closing now. I need a 4-0 Prolene double-armed, a 2-0 Silk, and a 0 Vicryl.', items: ['p40da', 's20', 'v0'], cam: { p40da: 'misread', s20: 'miss', v0: 'unreadable' }, pause: 15000 }
+      { who: 'Surgeon', text: 'Closing now. I need a 4-0 Prolene double-armed, a 2-0 Silk, and a 0 Vicryl.', items: ['p40da', 's20', 'v0'], cam: { p40da: 'misread', s20: 'miss', v0: 'unreadable' }, pause: 7000 }
     ],
-    interrupt: {
-      who: 'Anesthesia', text: 'Can you grab an upper body warming blanket? We need it now.',
-      walk: 'Walking to the supply room', prompt: 'Find the upper body warming blanket.',
-      options: ['Lower body warming blanket', 'Pressure bag', 'Upper body warming blanket', 'IV pole', 'Suction canister', 'Sharps container'],
-      answer: 'Upper body warming blanket', done: 'Hand it to anesthesia'
-    }
+    interrupt: { who: 'Anesthesia', text: 'Can you grab a warming blanket? We need it now.', walk: 'You leave the board to get it' }
   },
   s2: {
     label: 'Scenario 2', initial: 8,
@@ -351,17 +363,13 @@ var SCEN = {
       { who: 'Scrub nurse', text: 'Can I get a 0 Vicryl?', items: ['v0'] },
       { who: 'Surgeon', text: '3-0 V-Loc, double-armed, please.', items: ['vl30da'] },
       { who: 'Scrub nurse', text: 'I need a 2-0 Silk and a 4-0 Monocryl.', items: ['s20', 'm40'], interrupt: true },
-      { who: 'Surgeon', text: 'Closing now. I need a 3-0 Monocryl double-armed, a 3-0 Vicryl, and a 2-0 Vicryl.', items: ['m30da', 'v30', 'v20'], cam: { m30da: 'misread', v30: 'miss', v20: 'unreadable' }, pause: 15000 }
+      { who: 'Surgeon', text: 'Closing now. I need a 3-0 Monocryl double-armed, a 3-0 Vicryl, and a 2-0 Vicryl.', items: ['m30da', 'v30', 'v20'], cam: { m30da: 'misread', v30: 'miss', v20: 'unreadable' }, pause: 7000 }
     ],
-    interrupt: {
-      who: 'Surgeon', text: 'Can you turn on overhead light 2? I can’t see anything.',
-      walk: 'Going to the light controls', prompt: 'Find the switch for overhead light 2.',
-      options: ['Overhead light 1', 'Room lights', 'Overhead light 2', 'Headlight', 'Monitor 2', 'Exam light'],
-      answer: 'Overhead light 2', done: 'Back to the room'
-    }
+    interrupt: { who: 'Surgeon', text: 'Can you turn on the second overhead light? I can’t see.', walk: 'You leave the board to switch it on' }
   }
 };
 var SCEN_PARAM = { practice: 'practice', '1': 's1', '2': 's2' };
+var DEMO_NAMES = { camera: 'Camera-assisted board', whiteboard: 'Today’s whiteboard' };
 
 var STANDARD = [
   { mode: 'camera', scen: 'practice', label: 'Practice' },
@@ -496,12 +504,11 @@ function barcodeSVG(seed, w) {
   w = w || 48;
   return '<svg class="barcode" viewBox="0 0 60 12" width="' + w + '" height="12" preserveAspectRatio="none" aria-hidden="true" fill="currentColor">' + bars(seed, 60, 12) + '</svg>';
 }
-function packetInner(id, big) {
+function packetInner(id) {
   var it = ITEMS[id];
-  var meta = it.da ? '<span class="pk-da">Double-armed</span><span class="pk-meta">' + esc(big ? it.needle : it.code) + '</span>' : '<span class="pk-meta">' + esc(it.needle) + '</span>';
   return '<span class="pk-band" style="background:' + MAT_COLOR[it.mat] + '"></span>' +
-    '<span class="pk-body"><span class="pk-top"><span class="pk-name">' + esc(baseName(it)) + '</span>' + barcodeSVG(id, big ? 70 : 48) + '</span>' +
-    '<span class="pk-bot">' + meta + '</span></span>';
+    '<span class="pk-body"><span class="pk-name">' + esc(baseName(it)) + '</span>' +
+    '<span class="pk-bot">' + (it.da ? '<span class="pk-da">Double-armed · 2 needles</span>' : '<span class="pk-meta">1 needle</span>') + '</span></span>';
 }
 var DRAPE = '<rect width="100%" height="100%" fill="#22566b"/><path d="M-10 40C60 30 120 52 260 38M-10 104C70 92 150 118 260 100" stroke="#2f6a82" stroke-width="5" fill="none" opacity=".55"/>';
 function snapSVG(e) {
@@ -585,7 +592,7 @@ function feedSVG(d, clickable) {
     g += '</g>';
     var bx = cx - 27, by = cy - 19, tag = null, col = null, box = '', dims = ' x="' + bx + '" y="' + by + '" width="54" height="38" rx="3.5"';
     if (v.st === 'reading') { box = '<rect class="cam-reading"' + dims + ' fill="none" stroke="#d6e6ff" stroke-width="1.4" stroke-dasharray="4 3"/>'; tag = 'Reading…'; col = '#d6e6ff'; }
-    else if (v.st === 'pending') { box = '<rect' + dims + ' fill="none" stroke="#f6b93b" stroke-width="2.2"/>'; tag = 'Confirm ×' + v.n; col = '#f6b93b'; }
+    else if (v.st === 'pending') { box = '<rect' + dims + ' fill="none" stroke="#f6b93b" stroke-width="2.2"/>'; tag = 'Check ×' + v.n; col = '#f6b93b'; }
     else if (v.st === 'unread') { box = '<rect' + dims + ' fill="none" stroke="#f6b93b" stroke-width="2.2" stroke-dasharray="5 3"/>'; tag = 'Can’t read'; col = '#f6b93b'; }
     else if (v.st === 'counted') { box = '<rect' + dims + ' fill="none" stroke="#57d18c" stroke-width="1.6"/>'; tag = '✓ ×' + v.n; col = '#57d18c'; }
     else if (clickable) { box = '<rect class="cam-hit" data-act="feedadd" data-pid="' + p.id + '"' + dims + '><title>Not on the board. Click to add it.</title></rect>'; }
@@ -600,12 +607,12 @@ function feedSVG(d, clickable) {
 function feedHTML(d, clickable) {
   return '<div class="feed"><div class="feed-head"><span>' + icon('camera', 14) + 'Back table camera</span><span class="feed-live"><i></i>Live</span></div>' +
     feedSVG(d, clickable) +
-    '<div class="feed-foot">Green box: counted. Amber box: needs you. No box: not on the board.</div></div>';
+    '<div class="feed-foot">Green box: counted. Amber box: waiting for you. No box: <b>not counted</b>' + (clickable ? ', click it to add' : '') + '.</div></div>';
 }
 function confHTML(e) {
   var high = e.conf === 'High';
   return '<span class="conf"><span class="conf-bars" aria-hidden="true"><i class="on" style="height:6px"></i><i class="on" style="height:10px"></i><i class="' + (high ? 'on' : '') + '" style="height:14px"></i></span>' +
-    (high ? 'High confidence: label fully read' : 'Medium confidence: part of the label is covered') + '</span>';
+    (high ? 'Camera is sure: label fully read' : 'Camera is less sure: part of the label is covered') + '</span>';
 }
 
 function clearToast() {
@@ -626,12 +633,12 @@ function toast(msg, undo) {
 }
 
 /* ---------- state ---------- */
-function newRun(pid, mode, scen) {
+function newRun(pid, mode, scen, demo) {
   token += 1;
   orderSeq = 0;
   var sc = SCEN[scen];
   S = {
-    token: token, pid: pid || '', mode: mode, scen: scen, phase: 'intro',
+    token: token, pid: demo ? 'DEMO' : (pid || ''), demo: !!demo, mode: mode, scen: scen, phase: 'intro',
     runId: Date.now().toString(36).toUpperCase(), started: new Date(),
     initial: sc.initial, sponges: 20, instruments: 42, room: 'OR 7',
     clockBase: 10 * 60 + 2, t0: 0, seq: 0,
@@ -690,11 +697,21 @@ function renderInterrupt() {
   if (S && S.interrupt && S.interrupt.stage === 'walk') {
     setTimeout(function () {
       var b = document.querySelector('.bar i');
-      if (b) { b.style.transitionDuration = '4s'; b.style.width = '100%'; }
+      if (b) { b.style.transitionDuration = '5s'; b.style.width = '100%'; }
     }, 40);
   }
 }
+function demoBarHTML() {
+  var other = S.mode === 'camera' ? 'whiteboard' : 'camera';
+  return '<div class="demobar"><span><b>Demo</b> · ' + esc(DEMO_NAMES[S.mode]) + ' · nothing is saved</span><span class="demo-acts">' +
+    '<button data-act="demo" data-mode="' + other + '">' + icon('swap', 14) + ' Switch to ' + esc(DEMO_NAMES[other].toLowerCase()) + '</button>' +
+    '<button data-act="demo" data-mode="' + S.mode + '">Restart</button>' +
+    '<button data-act="demoexit">Exit demo</button></span></div>';
+}
 function topHTML() {
+  return (S && S.demo ? demoBarHTML() : '') + topBarHTML();
+}
+function topBarHTML() {
   if (S && (S.phase === 'case' || S.phase === 'handoff')) {
     var role = S.phase === 'case' ? 'You’re the circulating nurse in <b>' + S.room + '</b>' : 'Relief handoff · taking over <b>' + S.hd.room + '</b>';
     return '<div class="topbar"><span class="tb-role"><span class="tb-dot"></span>' + role + '</span>' +
@@ -720,7 +737,7 @@ function afterMain() {
   var facBtn = $('facBtn');
   if (facBtn) facBtn.style.visibility = S ? 'visible' : 'hidden';
   if (!S) { updateLinks(); return; }
-  if (S.phase === 'results' && !S.saved) saveRun();
+  if (S.phase === 'results' && !S.saved) { if (S.demo) S.saved = true; else saveRun(); }
 }
 
 /* ---------- setup ---------- */
@@ -753,6 +770,9 @@ function setupHTML() {
     '<fieldset><legend>Links for the session</legend>' + links + '</fieldset>' +
     '<p class="small muted">“Open here” runs that step on this computer, for when you share your own screen or hand over your laptop.</p>' +
     '<details class="spare"><summary>Spare links, outside the standard session</summary>' + spare + '</details>' +
+    '<div class="demo-box"><div><b>Try it yourself</b><p class="small muted">For a demonstration, or to learn both boards before a session. It runs the scored scenario on this computer, skips the ratings, and saves nothing. You can switch boards at any point.</p></div>' +
+    '<div class="demo-btns"><button class="primary" data-act="demo" data-mode="camera">' + icon('camera', 16) + ' Camera-assisted board</button>' +
+    '<button data-act="demo" data-mode="whiteboard">Today’s whiteboard</button></div></div>' +
     '<div class="saved"><span>Results saved in this browser: ' + runs.length + '</span>' +
     (runs.length ? '<button data-act="copyall">' + icon('copy', 14) + ' Copy all</button><button class="ghost" data-act="clearall">Clear</button>' : '') +
     '</div></div></div>';
@@ -774,24 +794,22 @@ function updateLinks() {
 /* ---------- intro ---------- */
 function introHTML() {
   var sc = SCEN[S.scen], cam = S.mode === 'camera';
-  var steps = '<li>When someone asks for a suture, find it on the <b>supply cart</b> and pick it up.</li>';
+  var steps = '<li>Someone asks for a suture, which is a needle with thread attached. Click the <b>highlighted packet</b> on the cart to open it for them.</li>';
   if (cam) {
-    steps += '<li>Click <b>Open onto field</b>. A camera above the back table spots the packet and suggests a count update on the board.</li>' +
-      '<li>Check each suggestion against what you opened, then <b>confirm</b>, <b>fix</b>, or <b>reject</b> it. Nothing is counted until you confirm it.</li>' +
-      '<li>You’re still responsible for the count. If the board is missing something, use <b>Add manually</b>.</li>';
+    steps += '<li>A camera sees the packet and puts a card on the count board. Read the card. Click <b>Correct</b> if it’s right, or <b>Not right</b> to fix it.</li>' +
+      '<li>The camera can be wrong or miss a packet, so the count is still yours. A packet with <b>no box</b> in the camera picture hasn’t been counted. Click it to add it.</li>' +
+      '<li>When the nurse calls out a count, click <b>Start count check</b> to compare her number with the board.</li>';
   } else {
-    steps += '<li>Click <b>Open onto field</b> to hand it to the team.</li>' +
-      '<li>Add its needles to the <b>whiteboard</b> with the +1 or +2 buttons, the way you’d write on the board today.</li>';
+    steps += '<li>Write it on the <b>whiteboard</b> yourself. Click <b>+1</b>, or <b>+2</b> for a double-armed packet.</li>' +
+      '<li>When the nurse calls out a count, click <b>Start count check</b> and say whether the whiteboard matches her number.</li>';
   }
-  steps += '<li>When the scrub nurse calls out a count, click <b>Start count check</b>.</li>';
-  var legend = cam ? '<div class="legend" aria-label="What the boxes in the camera view mean"><span><i class="lg g"></i>Green box: counted</span><span><i class="lg a"></i>Amber box: needs you</span><span><i class="lg"></i>No box: not on the board</span></div>' : '';
   return '<div class="screen"><div class="card">' +
     '<p class="eyebrow">' + esc(sc.label) + ' · ' + esc(MODES[S.mode].label) + '</p>' +
-    '<h1>You’re the circulating nurse</h1>' +
-    '<p>The circulating nurse gets supplies for the surgical team and keeps track of everything that goes onto the <b>sterile field</b>, the area where the surgery happens.</p>' +
-    '<ol class="steps">' + steps + '</ol>' + legend +
-    '<div class="callout">Some sutures are <b>double-armed</b>, which means the packet holds <b>2 needles</b>. Every needle on the field has to be counted.</div>' +
-    '<p class="muted">Please think out loud as you go. We’re testing the design, not you, so there are no wrong answers.</p>' +
+    '<h1>You’re the nurse keeping the needle count</h1>' +
+    '<p>During surgery, every needle handed to the surgical team has to be counted so that none is left behind. Keeping that count is your job.</p>' +
+    '<ol class="steps">' + steps + '</ol>' +
+    '<div class="callout">Most packets hold 1 needle. A <b>double-armed</b> packet holds <b>2 needles</b>.</div>' +
+    '<p class="muted">Nothing is timed, so go at your own pace. Please think out loud as you go. We’re testing the design, not you.</p>' +
     '<div class="go"><button class="primary big" data-act="start">Start</button></div>' +
     '</div></div>';
 }
@@ -799,60 +817,67 @@ function introHTML() {
 /* ---------- case ---------- */
 function caseHTML() {
   var board = S.mode === 'whiteboard' ? wbHTML(S, 'case') : boardHTML(S, 'case');
-  return '<div class="work"><div class="col">' + requestsHTML() + handHTML() + cartHTML() + '</div><div class="col">' + board + '</div></div>';
+  return '<div class="work"><div class="col">' + coachHTML() + requestsHTML() + cartHTML() + '</div><div class="col">' + board + '</div></div>';
+}
+function neededItems() {
+  var def = SCEN[S.scen].steps[S.stepIndex], r = S.steps[S.stepIndex];
+  if (S.count.requested || !def || !r || r.done) return [];
+  return def.items.filter(function (id) { return !r.got[id]; });
+}
+function coachHTML() {
+  if (!S.demo && !SCEN[S.scen].practice) return '';
+  var need = neededItems(), cam = S.mode === 'camera', tip;
+  if (S.count.requested) tip = 'The nurse wants a count. Click <b>Start count check</b>.';
+  else if (need.length) tip = 'Click the <b>highlighted packet</b> on the cart' + (need.length > 1 ? ', then the next one' : '') + '.';
+  else if (cam && pendingList(S).length) tip = 'The camera saw a packet. Read the card on the board, then click <b>Correct</b> or <b>Not right</b>.';
+  else if (!cam && S.packets.length && tallySum(S) < S.packets.reduce(function (a, p) { return a + p.n; }, 0)) tip = 'Now write it on the whiteboard. Click <b>+1</b>, or <b>+2</b> for a double-armed packet.';
+  else tip = 'Nothing to do right now. The next request is coming.';
+  return '<div class="coach" data-coach>' + icon('help', 16) + '<span>' + tip + '</span></div>';
 }
 function requestsHTML() {
   var sc = SCEN[S.scen], body = '';
   if (S.count.requested) {
     body = '<div class="rq count" data-scrub="' + S.count.scrub + '"><div class="rq-who">Scrub nurse</div>' +
       '<p class="rq-text">“Let’s do a needle count. I count ' + S.count.scrub + ' needles.”</p>' +
-      '<p class="rq-hint">Click <b>Start count check</b> on the board.</p></div>';
+      '<button class="primary" data-act="count">' + icon('list') + 'Start count check</button></div>';
   } else {
     var def = sc.steps[S.stepIndex], r = S.steps[S.stepIndex];
     if (def && r && !r.done) {
-      body = '<div class="rq"><div class="rq-who">' + esc(def.who) + '</div><p class="rq-text">“' + esc(def.text) + '”</p><ul class="rq-items">' +
+      body = '<div class="rq"><div class="rq-who">' + esc(def.who) + ' asks</div><p class="rq-text">“' + esc(def.text) + '”</p><ul class="rq-items">' +
         def.items.map(function (id) {
           var got = r.got[id];
           return '<li class="' + (got ? 'got' : '') + '"' + (got ? '' : ' data-need="' + id + '"') + '>' + (got ? icon('check', 16) : '<span class="box"></span>') + esc(ITEMS[id].name) + '</li>';
         }).join('') + '</ul></div>';
     } else {
-      body = '<p class="rq-wait">Waiting for the next request…</p>';
+      body = '<p class="rq-wait">No request right now.</p>';
     }
   }
-  var done = [];
-  S.steps.forEach(function (r2, i) { if (r2 && r2.done) sc.steps[i].items.forEach(function (id) { done.push(ITEMS[id].name); }); });
-  var doneHTML = done.length ? '<div class="rq-done">' + done.slice(-4).map(function (n) { return '<span>' + icon('check', 14) + esc(n) + '</span>'; }).join('') + '</div>' : '';
-  return '<section class="panel" aria-live="polite"><h2 class="ph">Requests</h2>' + body + doneHTML + '</section>';
-}
-function handHTML() {
-  if (!S.hand) {
-    return '<section class="panel"><h2 class="ph">In your hand</h2><p class="hand-empty">Nothing yet. Pick a packet from the cart.</p></section>';
-  }
-  return '<section class="panel"><h2 class="ph">In your hand<button class="ghost" data-act="putback">Put back</button></h2><div class="hand-row"><div class="pk big">' + packetInner(S.hand.itemId, true) + '</div></div>' +
-    '<div class="hand-actions"><button class="primary" data-act="open">Open onto field</button></div></section>';
+  return '<section class="panel" aria-live="polite"><h2 class="ph">Request</h2>' + body + '</section>';
 }
 function cartHTML() {
-  return '<section class="panel"><h2 class="ph">Supply cart <span>Click a packet to pick it up</span></h2><div class="cart">' +
+  var need = neededItems();
+  return '<section class="panel"><h2 class="ph">Supply cart <span>' + (need.length ? 'Click the highlighted packet' : '') + '</span></h2><div class="cart">' +
     CART.map(function (id) {
-      return '<button class="pk' + (S.hand && S.hand.itemId === id ? ' inhand' : '') + '" data-act="pick" data-item="' + id + '" aria-label="Pick up ' + esc(ITEMS[id].name) + '">' + packetInner(id) + '</button>';
+      var ask = need.indexOf(id) >= 0;
+      return '<button class="pk' + (ask ? ' ask' : '') + '" data-act="pick" data-item="' + id + '"' + (ask ? '' : ' disabled') + ' aria-label="Open ' + esc(ITEMS[id].name) + '">' + packetInner(id) + '</button>';
     }).join('') + '</div></section>';
 }
 function sourceLabel(e) {
-  if (e.source === 'manual') return e.fromFeed ? 'Added from camera view' : 'Added manually';
-  if (e.identified) return 'Camera, identified by nurse';
-  return e.fixed ? 'Camera, fixed' : 'Camera, confirmed';
+  if (e.source === 'manual') return 'Added by you';
+  if (e.identified) return 'Camera, named by you';
+  return e.fixed ? 'Camera, fixed by you' : 'Camera';
 }
 function rowHTML(e, ctx, d, opts) {
   opts = opts || {};
   var age = 999;
   if (ctx === 'case') age = (now() - (e.confirmedAt || e.createdAt)) / 1000;
-  var isNew = age < 60;
+  var isNew = age < 60, plain = ctx !== 'handoff';
   var since = ctx === 'handoff' && toMin(e.simTime) > toMin(d.lastMatch);
   var tag = opts.editable ? 'button' : 'div';
   var attrs = opts.editable ? ' type="button" data-act="editrow" data-id="' + e.id + '"' + (opts.from ? ' data-from="' + opts.from + '"' : '') + ' title="Edit or remove this entry"' : '';
-  return '<' + tag + attrs + ' class="row' + (opts.editable ? ' rowbtn' : '') + (isNew ? ' new' : '') + (since ? ' since' : '') + '"' + (isNew ? ' style="animation-delay:-' + age.toFixed(1) + 's"' : '') + '>' +
-    '<span class="r-time">' + esc(e.simTime) + '</span>' +
-    '<span class="r-name">' + esc(e.name) + (isNew ? '<span class="newchip" style="animation-delay:-' + age.toFixed(1) + 's">New</span>' : '') + (e.edited ? ' <span class="r-src">(edited)</span>' : '') + '</span>' +
+  return '<' + tag + attrs + ' class="row' + (plain ? ' nt' : '') + (opts.editable ? ' rowbtn' : '') + (isNew ? ' new' : '') + (since ? ' since' : '') + '"' + (isNew ? ' style="animation-delay:-' + age.toFixed(1) + 's"' : '') + '>' +
+    (plain ? '' : '<span class="r-time">' + esc(e.simTime) + '</span>') +
+    '<span class="r-name">' + esc(e.name) + (e.edited ? ' <span class="r-src">(changed)</span>' : '') + '</span>' +
     '<span class="r-src">' + sourceLabel(e) + '</span><span class="r-n">×' + e.needles + '</span></' + tag + '>';
 }
 function pendHTML(e, ctx) {
@@ -861,46 +886,34 @@ function pendHTML(e, ctx) {
   var wait = live ? '<span class="w js-wait" data-since="' + e.createdAt + '">waiting ' + mmss(age) + '</span>' : '<span class="w">waiting since ' + esc(e.simTime) + '</span>';
   var open = '<div class="pend' + (age >= 20 ? ' late' : '') + '" data-pending="' + e.id + '"' + (live ? ' data-created="' + e.createdAt + '"' : '') + '><div class="pend-top"><div class="snap">' + snapSVG(e) + '</div>';
   if (e.unreadable) {
-    return open + '<div class="pend-text"><span class="pend-tag">' + icon('help', 14) + 'New packet, label not readable ' + wait + '</span><b>What was opened?</b>' +
-      '<span>The camera sees a new packet on the table but can’t read its label.</span></div><span class="pend-n">+?</span></div>' +
-      '<div class="pend-actions two"><button class="go" data-act="fix" data-id="' + e.id + '">' + icon('edit') + 'Identify it</button>' +
-      '<button data-act="reject" data-id="' + e.id + '">' + icon('x') + 'Not a suture</button></div></div>';
+    return open + '<div class="pend-text"><span class="pend-tag">' + icon('help', 14) + 'Camera can’t read this one ' + wait + '</span><b>What is this packet?</b>' +
+      '<span>The camera sees a new packet but can’t read its label.</span></div><span class="pend-n">+?</span></div>' +
+      '<div class="pend-actions one"><button class="go" data-act="fix" data-id="' + e.id + '">' + icon('edit') + 'Tell the board what it is</button></div></div>';
   }
-  return open + '<div class="pend-text"><span class="pend-tag">' + icon('camera', 14) + 'Confirm this update ' + wait + '</span><b>' + esc(e.name) + '</b>' +
-    '<span>Camera read ' + needlesWord(e.needles) + '</span>' + confHTML(e) + '</div>' +
+  return open + '<div class="pend-text"><span class="pend-tag">' + icon('camera', 14) + 'Camera saw a new packet ' + wait + '</span><b>' + esc(e.name) + '</b>' +
+    '<span>Counts as ' + needlesWord(e.needles) + '</span>' + confHTML(e) + '</div>' +
     '<span class="pend-n">+' + e.needles + '</span></div>' +
-    '<div class="pend-actions"><button class="go" data-act="confirm" data-id="' + e.id + '">' + icon('check') + 'Confirm +' + e.needles + '</button>' +
-    '<button data-act="fix" data-id="' + e.id + '">' + icon('edit') + 'Fix</button>' +
-    '<button data-act="reject" data-id="' + e.id + '">' + icon('x') + 'Reject</button></div></div>';
+    '<div class="pend-actions"><button class="go" data-act="confirm" data-id="' + e.id + '">' + icon('check') + 'Correct, add ' + e.needles + '</button>' +
+    '<button data-act="fix" data-id="' + e.id + '">' + icon('x') + 'Not right</button></div></div>';
 }
 function pendNoteHTML(d, ctx) {
-  var pl = pendingList(d);
-  if (!pl.length) return '';
-  var known = pendingSum(d), unk = pendingUnknown(d), parts = [];
-  if (known) parts.push('+' + known + ' to confirm');
-  if (unk) parts.push(unk + ' to identify');
-  var wait = '';
-  if (ctx === 'case') {
-    var oldest = Math.min.apply(null, pl.map(function (e) { return e.createdAt; }));
-    wait = ' · <span class="js-wait" data-since="' + oldest + '">waiting ' + mmss((now() - oldest) / 1000) + '</span>';
-  }
-  return '<p class="pend-note">' + icon('alert') + '<span>' + parts.join(' · ') + wait + '</span></p>';
+  var n = pendingList(d).length;
+  if (!n) return '';
+  return '<p class="pend-note">' + icon('alert') + '<span>' + n + ' ' + plural(n, 'card is', 'cards are') + ' waiting for you' + (ctx === 'handoff' && pendingSum(d) ? ' (+' + pendingSum(d) + ' not counted yet)' : '') + '</span></p>';
 }
 function boardHTML(d, ctx) {
   var conf = confirmedSum(d), plist = pendingList(d);
   var rows = d.entries.filter(function (e) { return e.status === 'confirmed'; }).sort(function (a, b) { return b.order - a.order; });
   var head = '<div class="b-head"><span class="b-room">' + esc(d.room) + ' · Count board</span>' +
-    '<span>' + icon('clock', 16) + '<span class="js-clock">' + clockText() + '</span></span>' +
-    '<span>' + icon('check', 16) + 'Last matching count ' + esc(d.lastMatch) + (ctx === 'case' && S.lastMatchNote ? ' (' + esc(S.lastMatchNote) + ')' : '') + '</span>' +
+    (ctx === 'handoff' ? '<span>' + icon('check', 16) + 'Last matching count ' + esc(d.lastMatch) + '</span>' : '') +
     '<span class="b-cam"><i></i>Camera on</span></div>';
   var tools = ctx === 'case'
-    ? '<div class="b-tools"><button data-act="add">' + icon('plus') + 'Add manually</button><button data-act="summary">' + icon('swap') + 'Hand off count</button><button data-act="count">' + icon('list') + 'Start count check</button></div>'
+    ? '<div class="b-tools"><button data-act="add">' + icon('plus') + 'Add a packet by hand</button></div>'
     : '';
-  var left = '<div><div class="big-label">Needles expected on the field</div>' +
+  var left = '<div><div class="big-label">Needles that should be out</div>' +
     '<div class="big-num" data-expected="' + (d.initial + conf) + '">' + (d.initial + conf) + '</div>' +
-    '<div class="big-sub">' + d.initial + ' initial + ' + conf + ' added</div>' +
-    pendNoteHTML(d, ctx) + feedHTML(d, ctx === 'case') +
-    '<div class="mini">Sponges ' + d.sponges + ' · Instruments ' + d.instruments + '</div></div>';
+    '<div class="big-sub">' + d.initial + ' at the start + ' + conf + ' added</div>' +
+    pendNoteHTML(d, ctx) + feedHTML(d, ctx === 'case') + '</div>';
   var note = '';
   if (ctx === 'handoff') {
     var sinceItems = d.entries.filter(function (e) { return (e.status === 'confirmed' || e.status === 'pending') && toMin(e.simTime) > toMin(d.lastMatch); });
@@ -909,10 +922,12 @@ function boardHTML(d, ctx) {
       sinceItems.length + ' ' + plural(sinceItems.length, 'item', 'items') + ', +' + sinceN + ' ' + plural(sinceN, 'needle', 'needles') +
       (plist.length ? ', ' + plist.length + ' waiting for confirmation' : '') + '. Marked with a blue edge below.</span></div>';
   }
-  var right = '<div><p class="log-title">Added this case, newest first</p>' + note +
+  var right = '<div>' + note +
+    (plist.length ? '<p class="log-title wait">Waiting for you</p>' : '') +
     plist.map(function (e) { return pendHTML(e, ctx); }).join('') +
-    (rows.length ? rows.map(function (e) { return rowHTML(e, ctx, d, { editable: ctx === 'case' }); }).join('') : (plist.length ? '' : '<p class="log-empty">Nothing added yet.</p>')) +
-    (ctx === 'case' && rows.length ? '<p class="log-hint">Click an entry to fix or remove it.</p>' : '') + '</div>';
+    '<p class="log-title">' + (ctx === 'case' ? 'Counted so far' : 'Counted so far, newest first') + '</p>' +
+    (rows.length ? rows.map(function (e) { return rowHTML(e, ctx, d, { editable: ctx === 'case' }); }).join('') : '<p class="log-empty">Nothing counted yet.</p>') +
+    (ctx === 'case' && rows.length ? '<p class="log-hint">Click a line to change or remove it.</p>' : '') + '</div>';
   return '<section class="panel board dark" aria-label="Count board">' + head + tools + '<div class="b-main">' + left + right + '</div></section>';
 }
 function wbHTML(d, ctx) {
@@ -924,8 +939,7 @@ function wbHTML(d, ctx) {
     '<div class="wb-line"><span class="wb-label">Sponges</span><span class="wb-val">' + d.sponges + '</span></div>' +
     '<div class="wb-line"><span class="wb-label">Instruments</span><span class="wb-val">' + d.instruments + '</span></div></div>';
   var tools = ctx === 'case'
-    ? '<div class="wb-tools"><span class="muted small">Write on the board:</span><button data-act="wb" data-n="1">+1 needle</button><button data-act="wb" data-n="2">+2 needles</button><button class="ghost" data-act="wberase">Erase last</button></div>' +
-      '<div class="b-actions"><button data-act="count">' + icon('list') + 'Start count check</button></div>'
+    ? '<div class="wb-tools"><span class="muted small">Write on the board:</span><button data-act="wb" data-n="1">+1 needle</button><button data-act="wb" data-n="2">+2 needles</button><button class="ghost" data-act="wberase">Erase last</button></div>'
     : '';
   return '<section class="panel board" aria-label="Whiteboard">' + head + bubble + surface + tools + '</section>';
 }
@@ -1223,10 +1237,17 @@ function resultsHTML() {
     var details = Object.keys(l).filter(function (k) { return k !== 't' && k !== 'type'; }).map(function (k) { return k + '=' + l[k]; }).join(', ');
     return '<tr><td>' + l.t + '</td><td>' + esc(l.type) + '</td><td>' + esc(details) + '</td></tr>';
   }).join('');
-  return '<div class="screen"><div class="card wide"><p class="eyebrow">Run complete</p><h1>Thanks, that’s the end of this run</h1>' +
-    '<p>Please click <b>Copy results</b> and paste them into the meeting chat. That’s all for this part.</p>' +
-    '<div class="res-actions"><button class="primary" data-act="copyres">' + icon('copy', 16) + ' Copy results</button></div>' +
-    '<details class="facd"><summary>Details for the facilitator</summary>' +
+  var otherMode = S.mode === 'camera' ? 'whiteboard' : 'camera';
+  var head = S.demo
+    ? '<p class="eyebrow">Demo complete</p><h1>That’s the end of the demo</h1>' +
+      '<p>Nothing was saved. The details below are what a scored run records. A real session also asks for ratings before this screen.</p>' +
+      '<div class="res-actions"><button class="primary" data-act="demo" data-mode="' + otherMode + '">Try ' + esc(DEMO_NAMES[otherMode].toLowerCase()) + '</button>' +
+      '<button data-act="demo" data-mode="' + S.mode + '">Run this one again</button><button data-act="demoexit">Back to setup</button></div>'
+    : '<p class="eyebrow">Run complete</p><h1>Thanks, that’s the end of this run</h1>' +
+      '<p>Please click <b>Copy results</b> and paste them into the meeting chat. That’s all for this part.</p>' +
+      '<div class="res-actions"><button class="primary" data-act="copyres">' + icon('copy', 16) + ' Copy results</button></div>';
+  return '<div class="screen"><div class="card wide">' + head +
+    '<details class="facd"' + (S.demo ? ' open' : '') + '><summary>Details for the facilitator</summary>' +
     '<div class="res-actions"><button data-act="copyrow">' + icon('copy', 16) + ' Copy spreadsheet row</button><button data-act="newrun">Back to session setup</button></div>' +
     '<div class="res-grid">' + sec1 + sec2 + sec3 + sec4 + sec5 + '</div>' +
     '<details><summary>Event log (' + S.log.length + ' events, seconds from start)</summary><table class="logtable"><thead><tr><th>Time</th><th>Event</th><th>Details</th></tr></thead><tbody>' + logRows + '</tbody></table></details>' +
@@ -1272,24 +1293,29 @@ function itemPickList(act, highlight) {
     return '<button data-act="' + act + '" data-item="' + id + '"' + (highlight === id ? ' style="border-color:var(--accent)"' : '') + '><span>' + esc(it.name) + '</span><b>×' + it.n + ' ' + plural(it.n, 'needle', 'needles') + '</b></button>';
   }).join('') + '</div>';
 }
+function lastAskHTML() {
+  if (S.phase !== 'case') return '';
+  var steps = SCEN[S.scen].steps, def = steps[Math.min(S.stepIndex, steps.length - 1)];
+  return def ? '<p class="muted small">The last request was “' + esc(def.text) + '”</p>' : '';
+}
 function modalHTML() {
   var m = S.modal, d = activeData(), body = '', wide = false;
   if (m.type === 'add') {
-    body = '<h2 id="dlgT">' + (m.pid != null ? 'What is this packet?' : 'Add manually') + '</h2><p class="muted">Choose what was opened. The needle count comes from the suture list.</p>' + itemPickList('addpick') +
-      '<div class="dlg-actions"><button class="ghost" data-act="' + (m.from === 'count' ? 'countagain' : 'close') + '">Cancel</button></div>';
+    body = '<h2 id="dlgT">' + (m.pid != null ? 'What is this packet?' : 'Add a packet by hand') + '</h2><p>Choose what was opened. The board adds the right number of needles.</p>' + lastAskHTML() + itemPickList('addpick') +
+      '<div class="dlg-actions"><button class="ghost" data-act="' + (m.from === 'count' ? 'countback' : 'close') + '">Cancel</button></div>';
   } else if (m.type === 'fix') {
     var e = findEntry(d, m.id);
     if (!e) { S.modal = null; return ''; }
     body = e.unreadable
-      ? '<h2 id="dlgT">What was opened?</h2><p>The camera couldn’t read this label. Choose the suture that was opened.</p>' + itemPickList('fixpick')
-      : '<h2 id="dlgT">Fix this suggestion</h2><p>The camera read <b>' + esc(e.name) + '</b> with <b>' + needlesWord(e.needles) + '</b>. Choose what was actually opened.</p>' + itemPickList('fixpick', e.misread ? null : e.itemId);
-    body += '<div class="dlg-actions"><button class="ghost" data-act="close">Cancel</button></div>';
+      ? '<h2 id="dlgT">What is this packet?</h2><p>The camera couldn’t read the label. Choose what was opened.</p>' + lastAskHTML() + itemPickList('fixpick')
+      : '<h2 id="dlgT">What was actually opened?</h2><p>The camera says <b>' + esc(e.name) + '</b>, <b>' + needlesWord(e.needles) + '</b>. Choose the right one.</p>' + lastAskHTML() + itemPickList('fixpick', e.misread ? null : e.itemId);
+    body += '<div class="dlg-actions"><button class="ghost" data-act="close">Cancel</button><button data-act="reject" data-id="' + e.id + '">' + icon('x') + 'Nothing was opened, remove this card</button></div>';
   } else if (m.type === 'edit') {
     var ed = findEntry(S, m.id);
     if (!ed) { S.modal = null; return ''; }
-    body = '<h2 id="dlgT">Edit entry</h2><p>' + esc(ed.simTime) + ' · <b>' + esc(ed.name) + '</b> · ×' + ed.needles + ' (' + esc(sourceLabel(ed)) + ')</p>' +
-      '<p class="muted">If this entry is wrong, choose what was actually opened, or remove it.</p>' + itemPickList('editpick', ed.misread && !ed.fixed && !ed.edited ? null : ed.itemId) +
-      '<div class="dlg-actions"><button class="ghost" data-act="' + (m.from === 'count' ? 'countagain' : 'close') + '">Cancel</button><button data-act="removeentry">' + icon('x') + 'Remove entry</button></div>';
+    body = '<h2 id="dlgT">Change this line</h2><p><b>' + esc(ed.name) + '</b> · ×' + ed.needles + ' (' + esc(sourceLabel(ed)) + ')</p>' +
+      '<p class="muted">If this line is wrong, choose what was actually opened, or remove it.</p>' + itemPickList('editpick', ed.misread && !ed.fixed && !ed.edited ? null : ed.itemId) +
+      '<div class="dlg-actions"><button class="ghost" data-act="' + (m.from === 'count' ? 'countback' : 'close') + '">Cancel</button><button data-act="removeentry">' + icon('x') + 'Remove this line</button></div>';
   } else if (m.type === 'summary') {
     var plist = pendingList(S);
     var since = S.entries.filter(function (x) { return x.status === 'confirmed' && (x.confirmedAt || x.createdAt) >= S.lastMatchAt; }).sort(function (a, b) { return b.order - a.order; });
@@ -1325,40 +1351,28 @@ function countModalHTML(m) {
   }
   var plist = pendingList(S);
   if (!m.result) {
-    return '<h2 id="dlgT">Count check</h2><p class="muted">Enter the number of needles the scrub nurse counted. The board compares it with what it expects.</p>' +
-      (plist.length ? '<p class="pend-note">' + icon('alert') + '<span>' + plist.length + ' ' + plural(plist.length, 'suggestion is', 'suggestions are') + ' still waiting. Deal with ' + plural(plist.length, 'it', 'them') + ' first so the board is up to date.</span></p>' : '') +
-      '<label class="fld">Needles the scrub counted<input type="number" id="countIn" min="0" max="99" inputmode="numeric" data-autofocus></label>' +
-      '<p class="err">' + esc(m.err || '') + '</p>' +
-      '<div class="dlg-actions"><button class="ghost" data-act="close">' + (plist.length ? 'Back to the board' : 'Cancel') + '</button><button class="primary" data-act="countgo">Check count</button></div>';
+    return '<h2 id="dlgT">Count check</h2><p>The board compares the nurse’s count with its own.</p>' +
+      '<div class="dlg-actions"><button class="ghost" data-act="close">Cancel</button><button class="primary" data-act="countgo" data-autofocus>Compare</button></div>';
   }
   var r = m.result;
   if (r.match) {
-    return '<h2 id="dlgT">Count check</h2><div class="result ok">' + icon('check') + '<span>Count matches: ' + r.counted + ' needles. Recorded at ' + esc(S.lastMatch) + '.</span></div>' +
+    return '<h2 id="dlgT">Count check</h2><div class="result ok">' + icon('check') + '<span>It matches. The nurse counted ' + r.counted + ' and the board says ' + r.expected + '.</span></div>' +
       '<div class="dlg-actions"><button class="primary" data-act="countdone" data-autofocus>Done</button></div>';
   }
   var diff = r.counted - r.expected;
   var since = S.entries.filter(function (x) { return x.status === 'confirmed' && (x.confirmedAt || x.createdAt) >= S.lastMatchAt; }).sort(function (a, b) { return b.order - a.order; });
-  return '<h2 id="dlgT">Count check</h2><div class="result bad">' + icon('alert') + '<span>Doesn’t match. The scrub counted ' + r.counted + ', but the board expects ' + r.expected + ' (' + Math.abs(diff) + ' ' + (diff > 0 ? 'more' : 'fewer') + ' than the board).</span></div>' +
-    '<p>' + (diff > 0 ? 'Something may have been opened without being recorded, or recorded with too few needles.' : 'Something may have been recorded twice, or with too many needles.') + ' Compare the entries since the last matching count (' + esc(S.lastMatch) + ') with the camera view.</p>' +
-    '<div class="cmp"><div>' + (since.length ? '<div class="mini-log">' + since.map(function (x) { return rowHTML(x, 'summary', S, { editable: true, from: 'count' }); }).join('') + '</div><p class="log-hint">Click an entry to fix or remove it.</p>' : '<p class="muted">Nothing recorded since then.</p>') + '</div>' +
-    '<div>' + feedHTML(S, true) + '<p class="log-hint">Click a packet with no box to add it.</p></div></div>' +
-    (plist.length ? '<p class="pend-note">' + icon('alert') + '<span>' + plist.length + ' ' + plural(plist.length, 'suggestion is', 'suggestions are') + ' still waiting on the board.</span></p>' : '') +
-    '<div class="dlg-actions"><button class="ghost" data-act="countskip">Continue without resolving</button>' +
-    (plist.length ? '<button data-act="close">Back to the board</button>' : '') +
-    '<button data-act="add">' + icon('plus') + 'Add manually</button><button class="primary" data-act="countagain" data-autofocus>Check again</button></div>';
+  return '<h2 id="dlgT">Count check</h2><div class="result bad">' + icon('alert') + '<span>It doesn’t match. The nurse counted <b>' + r.counted + '</b> and the board says <b>' + r.expected + '</b>.</span></div>' +
+    '<p>' + (plist.length ? 'Start with the ' + plural(plist.length, 'card', 'cards') + ' still waiting on the board.' : (diff > 0 ? 'The board is short by ' + diff + '. Look for a packet with no box in the camera picture, or a line with too few needles.' : 'The board is over by ' + (-diff) + '. Look for a line that was added twice, or one with too many needles.')) + '</p>' +
+    '<div class="cmp"><div>' + (since.length ? '<div class="mini-log">' + since.map(function (x) { return rowHTML(x, 'summary', S, { editable: true, from: 'count' }); }).join('') + '</div><p class="log-hint">Click a line to change or remove it.</p>' : '<p class="muted">Nothing counted yet.</p>') + '</div>' +
+    '<div>' + feedHTML(S, true) + '</div></div>' +
+    '<div class="dlg-actions"><button class="ghost" data-act="countskip">I can’t find it, move on</button>' +
+    (plist.length ? '<button data-act="countagain">Compare again</button><button class="primary" data-act="close" data-autofocus>Back to the board</button>'
+      : '<button class="primary" data-act="countagain" data-autofocus>Compare again</button>') + '</div>';
 }
 function interruptHTML() {
-  var I = S.interrupt, c = I.cfg, body;
-  if (I.stage === 'walk') {
-    body = '<p class="muted">' + esc(c.walk) + '…</p><div class="bar"><i></i></div>';
-  } else if (I.stage === 'find') {
-    body = '<p class="q-t">' + esc(c.prompt) + '</p><div class="opts">' + c.options.map(function (o) {
-      return '<button data-act="intopt" data-opt="' + esc(o) + '">' + esc(o) + '</button>';
-    }).join('') + '</div>';
-  } else {
-    body = '<div class="result ok">' + icon('check') + '<span>Got it.</span></div><div class="dlg-actions"><button class="primary" data-act="intdone" data-autofocus>' + esc(c.done) + '</button></div>';
-  }
-  return '<div class="ov int"><div class="dlg int-dlg" role="alertdialog" aria-modal="true" aria-labelledby="intT"><p class="int-who">' + esc(c.who) + '</p><p class="int-text" id="intT">“' + esc(c.text) + '”</p>' + body + '</div></div>';
+  var c = S.interrupt.cfg;
+  return '<div class="ov int"><div class="dlg int-dlg" role="alertdialog" aria-modal="true" aria-labelledby="intT"><p class="int-who">' + esc(c.who) + ' interrupts</p><p class="int-text" id="intT">“' + esc(c.text) + '”</p>' +
+    '<p class="muted">' + esc(c.walk) + '…</p><div class="bar"><i></i></div></div></div>';
 }
 
 /* ---------- case logic ---------- */
@@ -1394,20 +1408,26 @@ function requestCount() {
   renderMain();
 }
 function pick(itemId) {
-  if (S.phase !== 'case') return;
-  if (S.hand) {
-    if (S.hand.itemId === itemId) return;
-    putBack(true);
-  }
+  if (S.phase !== 'case' || S.interrupt || neededItems().indexOf(itemId) < 0) return;
   S.hand = { itemId: itemId, pickedAt: now() };
-  log('pick', { item: itemId });
-  renderMain();
+  openPacket();
 }
-function putBack(silent) {
-  if (!S.hand) return;
-  log('put_back', { item: S.hand.itemId });
-  S.hand = null;
-  if (!silent) renderMain();
+function putBack() { S.hand = null; }
+function boardBusy() {
+  if (S.interrupt || S.modal) return true;
+  return S.mode === 'camera' && (pendingList(S).length > 0 || S.packets.some(function (p) { return p.cam === 'reading'; }));
+}
+function nextWhenCalm(next, gap) {
+  var tk = S.token, calmAt = null, waited = 0, last = now();
+  (function loop() {
+    if (!S || S.token !== tk || S.phase !== 'case' || S.count.requested) return;
+    var t = now(), away = !!(S.interrupt || S.modal);
+    if (!away) waited += t - last;
+    last = t;
+    if (boardBusy()) calmAt = null; else if (calmAt === null) calmAt = t;
+    if ((calmAt !== null && t - calmAt >= gap) || waited >= 30000) { showStep(next); return; }
+    setTimeout(loop, 200);
+  })();
 }
 function openPacket() {
   var h = S.hand;
@@ -1428,8 +1448,7 @@ function openPacket() {
       r.doneAt = now();
       stepDone = true;
       log('request_done', { step: S.stepIndex + 1, seconds: Math.round((r.doneAt - r.shownAt) / 100) / 10 });
-      var tk = S.token, next = S.stepIndex + 1;
-      setTimeout(function () { if (S && S.token === tk && S.phase === 'case') showStep(next); }, def.pause || 2500);
+      nextWhenCalm(S.stepIndex + 1, def.pause || (S.mode === 'camera' ? 3500 : 5000));
     }
   }
   if (!fulfilled) log('wrong_item_opened', { item: p.itemId });
@@ -1521,9 +1540,11 @@ function addManual(itemId, pid) {
   d.entries.push(e);
   log('manual_add', { item: itemId, needles: it.n, via: pid != null ? 'camera view' : 'button' });
   toast('Added: +' + needlesWord(it.n) + ', ' + it.name);
-  S.modal = S.modal && S.modal.from === 'count' ? { type: 'count' } : null;
+  var fromCount = S.modal && S.modal.from === 'count';
+  S.modal = null;
   renderModal();
   renderMain();
+  if (fromCount) doCount();
 }
 function editEntry(id, itemId) {
   var e = findEntry(S, id);
@@ -1535,10 +1556,12 @@ function editEntry(id, itemId) {
   e.needles = it.n;
   e.edited = true;
   e.editedAt = now();
-  S.modal = S.modal && S.modal.from === 'count' ? { type: 'count' } : null;
+  var fromCount = S.modal && S.modal.from === 'count';
+  S.modal = null;
   toast('Entry updated: ' + it.name + ', ×' + it.n);
   renderModal();
   renderMain();
+  if (fromCount) doCount();
 }
 function removeEntry(id) {
   var e = findEntry(S, id);
@@ -1546,10 +1569,12 @@ function removeEntry(id) {
   e.status = 'deleted';
   e.deletedAt = now();
   log('entry_removed', { item: e.itemId, needles: e.needles, source: e.source });
-  S.modal = S.modal && S.modal.from === 'count' ? { type: 'count' } : null;
+  var fromCount = S.modal && S.modal.from === 'count';
+  S.modal = null;
   toast('Entry removed');
   renderModal();
   renderMain();
+  if (fromCount) doCount();
 }
 function wbAdd(n) {
   S.tallies.push({ n: n, at: now() });
@@ -1571,7 +1596,7 @@ function checkIntRecovery(p) {
 }
 function startInterrupt() {
   var cfg = SCEN[S.scen].interrupt;
-  if (S.hand) putBack(true);
+  S.hand = null;
   S.modal = null;
   renderModal();
   clearToast();
@@ -1582,23 +1607,9 @@ function startInterrupt() {
   clearTimeout(intTimer);
   intTimer = setTimeout(function () {
     if (!S || S.token !== tk || !S.interrupt) return;
-    S.interrupt.stage = 'find';
-    renderInterrupt();
-  }, 4100);
-}
-function intPick(el) {
-  var I = S.interrupt;
-  if (!I) return;
-  if (el.getAttribute('data-opt') === I.cfg.answer) {
-    I.stage = 'found';
-    log('interruption_found', { wrong_picks: I.wrong });
-    renderInterrupt();
-  } else {
-    I.wrong++;
-    el.classList.remove('shake');
-    void el.offsetWidth;
-    el.classList.add('shake');
-  }
+    intDone();
+    toast('You’re back at the board.');
+  }, 5200);
 }
 function intDone() {
   var I = S.interrupt;
@@ -1610,19 +1621,13 @@ function intDone() {
   renderMain();
 }
 function openCount() {
-  S.modal = { type: 'count' };
   log('count_check_opened');
+  if (S.mode === 'camera' && S.count.requested) { doCount(); return; }
+  S.modal = { type: 'count' };
   renderModal();
 }
 function doCount() {
-  var inp = $('countIn');
-  var raw = inp ? inp.value.trim() : '';
-  var v = parseInt(raw, 10);
-  if (!/^\d+$/.test(raw) || !isFinite(v)) {
-    S.modal = { type: 'count', err: 'Enter the number of needles the scrub nurse counted.' };
-    renderModal();
-    return;
-  }
+  var v = S.count.scrub;
   var expected = S.initial + confirmedSum(S), pend = pendingSum(S);
   var match = v === expected;
   S.count.attempts.push({ at: now(), counted: v, expected: expected, pending: pend, match: match });
@@ -1634,7 +1639,8 @@ function doCount() {
     S.lastMatchNote = 'count check';
     S.lastMatchAt = now();
   }
-  S.modal = { type: 'count', result: { counted: v, expected: expected, pend: pend, match: match } };
+  S.count.last = { counted: v, expected: expected, pend: pend, match: match };
+  S.modal = { type: 'count', result: S.count.last };
   renderModal();
   renderMain();
 }
@@ -1721,7 +1727,7 @@ function submitProbe() {
   }
   S.probe.needles = String(parseInt(S.probe.needles, 10));
   log('probe_submitted', { needles: S.probe.needles, recent: S.probe.recent, double_armed: S.probe.da, check_first: S.probe.check, confidence: S.probe.conf });
-  S.phase = 'survey';
+  S.phase = S.demo ? 'results' : 'survey';
   render();
   window.scrollTo(0, 0);
 }
@@ -1749,7 +1755,7 @@ function copyText(text, okMsg) {
   }
 }
 function backToSetup() {
-  setupVals.pid = S.pid;
+  if (!S.demo) setupVals.pid = S.pid;
   S = null;
   clearInterval(clockTimer);
   history.replaceState(null, '', location.pathname);
@@ -1759,6 +1765,16 @@ function backToSetup() {
 
 /* ---------- events ---------- */
 var ACT = {
+  demo: function (el) {
+    var mode = el.getAttribute('data-mode');
+    if (S) { S.modal = null; S.interrupt = null; } else readSetup();
+    clearInterval(clockTimer);
+    newRun('', mode, 's1', true);
+    history.replaceState(null, '', location.pathname + '?demo=' + mode);
+    render();
+    window.scrollTo(0, 0);
+  },
+  demoexit: function () { backToSetup(); },
   openrun: function (el) {
     readSetup();
     newRun(setupVals.pid, el.getAttribute('data-mode'), el.getAttribute('data-scen'));
@@ -1775,10 +1791,8 @@ var ACT = {
   },
   start: function () { startCase(); },
   pick: function (el) { pick(el.getAttribute('data-item')); },
-  open: function () { openPacket(); },
-  putback: function () { putBack(false); },
   confirm: function (el) { confirmEntry(el.getAttribute('data-id')); },
-  reject: function (el) { rejectEntry(el.getAttribute('data-id')); },
+  reject: function (el) { rejectEntry(el.getAttribute('data-id')); if (S.modal) { S.modal = null; renderModal(); } },
   undo: function () { undoLast(); },
   fix: function (el) { S.modal = { type: 'fix', id: el.getAttribute('data-id') }; log('camera_fix_opened'); renderModal(); },
   fixpick: function (el) { fixEntry(S.modal.id, el.getAttribute('data-item')); },
@@ -1806,15 +1820,14 @@ var ACT = {
   close: function () { S.modal = null; renderModal(); },
   count: function () { openCount(); },
   countgo: function () { doCount(); },
-  countagain: function () { S.modal = { type: 'count' }; renderModal(); },
+  countagain: function () { doCount(); },
+  countback: function () { S.modal = { type: 'count', result: S.count.last }; renderModal(); },
   countyes: function () { wbCount(true); },
   countno: function () { wbCount(false); },
   countskip: function () { skipCount(); },
   countdone: function () { S.modal = null; renderModal(); endCase(); },
   wb: function (el) { wbAdd(+el.getAttribute('data-n')); },
   wberase: function () { wbErase(); },
-  intopt: function (el) { intPick(el); },
-  intdone: function () { intDone(); },
   handoffgo: function () { startHandoff(); },
   reviewed: function () { reviewed(); },
   probesubmit: function () { submitProbe(); },
@@ -1836,8 +1849,8 @@ var ACT = {
     S.modal = null; S.interrupt = null; S.phase = 'results'; render();
   },
   facrestart: function () {
-    var pid = S.pid, mode = S.mode, scen = S.scen;
-    newRun(pid, mode, scen);
+    var pid = S.pid, mode = S.mode, scen = S.scen, demo = S.demo;
+    newRun(pid, mode, scen, demo);
     clearInterval(clockTimer);
     render();
   },
@@ -1891,7 +1904,7 @@ document.addEventListener('keydown', function (ev) {
   if (ev.key === 'F' && ev.shiftKey && ev.altKey) { S.modal = { type: 'fac' }; renderModal(); }
 });
 window.addEventListener('beforeunload', function (ev) {
-  if (S && ['case', 'handoff', 'probe', 'survey'].indexOf(S.phase) >= 0) { ev.preventDefault(); ev.returnValue = ''; }
+  if (S && !S.demo && ['case', 'handoff', 'probe', 'survey'].indexOf(S.phase) >= 0) { ev.preventDefault(); ev.returnValue = ''; }
 });
 
 /* ---------- boot ---------- */
@@ -1899,7 +1912,8 @@ window.addEventListener('beforeunload', function (ev) {
   var q = new URLSearchParams(location.search);
   var mode = q.get('mode'), scen = SCEN_PARAM[q.get('scenario') || ''], pid = q.get('pid') || '';
   setupVals.pid = pid;
-  if (MODES[mode] && scen) newRun(pid, mode, scen);
+  if (MODES[q.get('demo')]) newRun('', q.get('demo'), 's1', true);
+  else if (MODES[mode] && scen) newRun(pid, mode, scen);
   render();
 })();
 })();
