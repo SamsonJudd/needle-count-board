@@ -1,0 +1,1908 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>Needle Count Board</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Kalam:wght@400&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#eceff3;--panel:#ffffff;--line:#d8dde4;--line2:#bfc6d0;
+  --text:#15181d;--muted:#566070;--faint:#8b929d;
+  --accent:#1f5fcc;--accent-d:#174a9f;--accent-bg:#e6eefb;--accent-line:#c3d4f3;--accent-text:#174a9f;
+  --warn-bg:#fdf2d6;--warn-line:#e2ad3b;--warn-text:#6e4300;
+  --ok-bg:#e2f3e5;--ok-line:#79c088;--ok-text:#1c6631;
+  --bad-bg:#fce7e7;--bad-line:#e69a9a;--bad-text:#951b1b;
+  --int:#c2410c;--int-text:#9a3412;
+  --d-bg:#0f1721;--d-line:#27364a;--d-text:#f1f5f9;--d-muted:#9db0c6;--d-amber:#f6b93b;--d-amber-bg:#2b2110;--d-amber-text:#ffe3a3;--d-green:#57d18c;
+  --r:10px;
+}
+*{box-sizing:border-box}
+html,body{margin:0;background:var(--bg);color:var(--text);font:15px/1.45 system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;-webkit-font-smoothing:antialiased}
+h1{font-size:26px;line-height:1.2;margin:0 0 10px;font-weight:650}
+h2{font-size:18px;margin:0 0 6px;font-weight:650}
+p{margin:0 0 10px}
+button{font:inherit;font-weight:500;cursor:pointer;border-radius:8px;border:1px solid var(--line2);background:#fff;color:var(--text);padding:8px 14px;min-height:40px;display:inline-flex;align-items:center;justify-content:center;gap:6px;transition:background .12s,border-color .12s}
+button:hover{background:#f3f5f8}
+button:active{transform:translateY(1px)}
+button.primary{background:var(--accent);border-color:var(--accent);color:#fff}
+button.primary:hover{background:var(--accent-d);border-color:var(--accent-d)}
+button.ghost{border-color:transparent;background:transparent;color:var(--muted)}
+button.ghost:hover{background:#e9edf2;color:var(--text)}
+button.big{font-size:17px;min-height:48px;padding:10px 26px}
+button:focus-visible,input:focus-visible,summary:focus-visible{outline:3px solid #9bbcf2;outline-offset:2px}
+input[type=text],input[type=number]{font:inherit;padding:8px 10px;border:1px solid var(--line2);border-radius:8px;min-height:42px;width:100%;background:#fff;color:var(--text)}
+input[type=number]{font-size:22px;font-weight:600;max-width:160px}
+.muted{color:var(--muted)}
+.small{font-size:13px}
+
+.topbar{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:10px 20px;background:#1d2430;color:#e9edf3;font-size:14px;min-height:44px}
+.topbar b{color:#fff;font-weight:600}
+.tb-role{display:inline-flex;align-items:center;gap:8px}
+.tb-dot{width:8px;height:8px;border-radius:50%;background:#5bd08a;display:inline-block}
+
+.work{display:grid;grid-template-columns:minmax(330px,390px) minmax(0,1fr);gap:16px;padding:14px 18px;max-width:1500px;margin:0 auto}
+.col{display:flex;flex-direction:column;gap:12px;min-width:0}
+.panel{background:var(--panel);border:1px solid var(--line);border-radius:var(--r);padding:12px 14px}
+.ph{display:flex;align-items:center;justify-content:space-between;gap:8px;margin:0 0 9px;font-size:12px;letter-spacing:.06em;color:var(--muted);text-transform:uppercase;font-weight:650;min-height:20px}
+.ph span{text-transform:none;letter-spacing:0;font-weight:400;font-size:13px}
+.ph button{text-transform:none;letter-spacing:0;font-size:13px;min-height:28px;padding:2px 10px;margin:-4px -6px -4px 0}
+
+.rq{background:var(--accent-bg);border:1px solid var(--accent-line);border-radius:10px;padding:10px 13px}
+.rq.count{background:#fff4ec;border-color:#f4c9a8}
+.rq-who{font-size:13px;font-weight:650;color:var(--accent-text)}
+.rq.count .rq-who{color:var(--int-text)}
+.rq-text{font-size:19px;font-weight:550;margin:4px 0 8px;line-height:1.3}
+.rq-items{list-style:none;margin:0;padding:0;display:flex;flex-wrap:wrap;gap:6px 16px;font-size:14px}
+.rq-items li{display:flex;align-items:center;gap:6px}
+.rq-items .box{width:16px;height:16px;border:1.5px solid #7f9cd3;border-radius:4px;display:inline-block;flex:none}
+.rq-items li.got{color:var(--ok-text);font-weight:550}
+.rq-hint{font-size:14px;color:var(--int-text);margin:0}
+.rq-wait{color:var(--muted);margin:0;padding:6px 0}
+.rq-done{margin-top:10px;font-size:13px;color:var(--muted);display:flex;flex-wrap:wrap;gap:4px 12px}
+.rq-done span{display:inline-flex;align-items:center;gap:4px}
+
+.hand-row{display:flex;gap:12px;align-items:stretch}
+.hand-empty{color:var(--muted);margin:0;padding:10px 0}
+.hand-actions{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px;align-items:center}
+
+.cart{display:grid;grid-template-columns:1fr 1fr;gap:7px}
+.pk{display:flex;align-items:stretch;justify-content:flex-start;gap:0;padding:0;text-align:left;min-height:54px;overflow:hidden;border-radius:8px;border:1px solid var(--line2);background:#fbfaf7;width:100%}
+.pk:hover{background:#f4f2ec;border-color:#a9b1bc}
+.pk.inhand{outline:3px solid var(--accent);outline-offset:-2px}
+.pk-band{width:8px;flex:none}
+.pk-body{display:flex;flex-direction:column;justify-content:center;gap:5px;padding:7px 10px;flex:1;min-width:0}
+.pk-top{display:flex;align-items:center;justify-content:space-between;gap:8px;min-width:0}
+.pk-name{font-weight:650;font-size:14px;line-height:1.2;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0}
+.pk-da{font-size:11px;font-weight:700;color:#7a2e0e;background:#fbe0cf;border-radius:4px;padding:1px 6px;white-space:nowrap}
+.pk-bot{display:flex;align-items:center;gap:7px;min-width:0}
+.pk-meta{font-size:12px;color:var(--muted);white-space:nowrap}
+.barcode{color:#2a2f36;flex:none}
+.pk.big{flex:1;min-height:62px;cursor:default;background:#fbfaf7}
+.pk.big:hover{background:#fbfaf7;border-color:var(--line2)}
+.pk.big .pk-name{font-size:17px}
+.hand-actions button,.b-actions button,.b-tools button,.lk button,.res-actions button{white-space:nowrap}
+
+.board{padding:0;overflow:hidden}
+.b-head{display:flex;flex-wrap:wrap;align-items:center;gap:6px 18px;padding:10px 16px;border-bottom:1px solid var(--line);font-size:14px;color:var(--muted)}
+.b-room{font-weight:650;color:var(--text);font-size:15px}
+.b-head .ico{vertical-align:-3px;margin-right:4px}
+.b-mode{margin-left:auto;font-size:12px;font-weight:650;border-radius:999px;padding:4px 11px;background:var(--accent-bg);color:var(--accent-text);display:inline-flex;gap:6px;align-items:center}
+.b-tools{display:flex;flex-wrap:wrap;gap:8px;padding:10px 16px;border-bottom:1px solid var(--line)}
+.b-main{display:grid;grid-template-columns:300px minmax(0,1fr);gap:20px;padding:14px 16px 16px}
+.big-label{font-size:15px;color:var(--muted);font-weight:550}
+.big-num{font-size:96px;font-weight:650;line-height:1;letter-spacing:-.03em;margin:4px 0 4px;font-variant-numeric:tabular-nums}
+.big-sub{font-size:15px;color:var(--muted);margin-bottom:10px}
+.pend-note{display:flex;gap:8px;align-items:center;background:var(--warn-bg);border:1px solid var(--warn-line);color:var(--warn-text);border-radius:8px;padding:8px 11px;font-weight:650;font-size:14px;margin:0 0 10px}
+.pend-note .ico{flex:none}
+.mini{font-size:13px;margin-top:8px}
+.log-title{font-size:13px;color:var(--muted);margin:0 0 6px;font-weight:550}
+.handoff-note{display:flex;gap:8px;align-items:flex-start;background:var(--accent-bg);border:1px solid var(--accent-line);color:var(--accent-text);border-radius:8px;padding:9px 11px;font-size:14px;margin:0 0 8px}
+.handoff-note .ico{flex:none;margin-top:2px}
+.row{display:grid;grid-template-columns:46px minmax(0,1fr) auto 34px;align-items:center;gap:10px;padding:8px 8px;border-bottom:1px solid var(--line);font-size:15px}
+.row.since{box-shadow:inset 3px 0 0 #7f9cd3}
+.rowbtn{width:100%;border:0;border-bottom:1px solid var(--line);border-radius:0;background:transparent;min-height:0;text-align:left;font-weight:400;justify-content:stretch;color:var(--text)}
+.rowbtn:hover{background:#f1f5fc}
+.rowbtn:active{transform:none}
+.log-hint{font-size:12px;color:var(--faint);margin:8px 0 0}
+.r-time{color:var(--muted);font-variant-numeric:tabular-nums;font-size:14px}
+.r-name{font-weight:550;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.r-src{font-size:12px;color:var(--muted);white-space:nowrap}
+.r-n{font-weight:700;text-align:right;font-size:17px;font-variant-numeric:tabular-nums}
+.row.new{animation:rowfade 60s linear forwards}
+@keyframes rowfade{0%,88%{background:#e6eefb}100%{background:transparent}}
+.newchip{font-size:10.5px;font-weight:700;color:var(--accent-text);background:#d4e2fa;border-radius:4px;padding:1px 6px;margin-left:8px;vertical-align:1px;animation:chipfade 60s linear forwards}
+@keyframes chipfade{0%,88%{opacity:1}100%{opacity:0}}
+.log-empty{color:var(--muted);padding:10px 4px;margin:0}
+.pend{background:var(--warn-bg);border:1px solid var(--warn-line);border-radius:10px;padding:10px;margin-bottom:8px;color:var(--warn-text)}
+.pend-top{display:flex;gap:12px;align-items:flex-start}
+.snap{flex:none;width:132px;height:88px;border-radius:6px;overflow:hidden;border:1px solid #d8c9a3;background:#fff;line-height:0}
+.pend-text{flex:1;min-width:0;display:flex;flex-direction:column;gap:3px}
+.pend-text b{font-size:16px;font-weight:650;color:#4a2d00}
+.pend-text span{font-size:13px}
+.pend-tag{font-size:11px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;display:flex;flex-wrap:wrap;gap:4px 8px;align-items:center}
+.pend-tag .w{text-transform:none;letter-spacing:0;font-weight:500;opacity:.85}
+.pend-n{font-size:26px;font-weight:700;color:#4a2d00;font-variant-numeric:tabular-nums}
+.pend-actions{display:grid;grid-template-columns:1.3fr 1fr 1fr;gap:8px;margin-top:10px}
+.pend-actions.two{grid-template-columns:1.3fr 1fr}
+.pend-actions button{background:#fff}
+.conf{display:inline-flex;align-items:center;gap:7px}
+.conf-bars{display:inline-flex;gap:2px;align-items:flex-end;flex:none}
+.conf-bars i{width:4px;background:currentColor;opacity:.3;border-radius:1px;display:inline-block}
+.conf-bars i.on{opacity:1}
+.b-actions{display:flex;flex-wrap:wrap;gap:8px;padding:12px 16px;border-top:1px solid var(--line);background:#fafbfc}
+
+.board.dark{background:var(--d-bg);border-color:#0b1118;color:var(--d-text)}
+.dark .b-head{border-bottom-color:var(--d-line);color:var(--d-muted)}
+.dark .b-room{color:#fff}
+.b-cam{margin-left:auto;display:inline-flex;align-items:center;gap:7px;font-size:12px;font-weight:650;border-radius:999px;padding:4px 11px;background:#163626;color:#8fe3b1}
+.b-cam i{width:8px;height:8px;border-radius:50%;background:var(--d-green);display:inline-block}
+.dark .b-tools{background:#131d2a;border-bottom-color:var(--d-line)}
+.dark .b-tools button{background:#1c2a3b;border-color:#3a4d66;color:#e8eef5}
+.dark .b-tools button:hover{background:#26384e}
+.dark .big-label,.dark .big-sub,.dark .log-title,.dark .log-hint,.dark .log-empty,.dark .mini{color:var(--d-muted)}
+.dark .big-num{color:#fff}
+.dark .pend-note{background:var(--d-amber-bg);border-color:var(--d-amber);color:var(--d-amber-text)}
+.dark .row{border-bottom-color:#243245}
+.dark .r-time,.dark .r-src{color:var(--d-muted)}
+.dark .rowbtn{color:var(--d-text);border-bottom-color:#243245}
+.dark .rowbtn:hover{background:#1a2839}
+.dark .row.new{animation-name:rowfadeD}
+@keyframes rowfadeD{0%,88%{background:#1b3350}100%{background:transparent}}
+.dark .newchip{background:#24507e;color:#d3e7ff}
+.dark .pend{background:var(--d-amber-bg);border:1.5px solid var(--d-amber);color:var(--d-amber-text)}
+.dark .pend.late{animation:late 1.3s ease-in-out infinite}
+@keyframes late{50%{box-shadow:0 0 0 4px rgba(246,185,59,.35)}}
+.dark .pend-text b,.dark .pend-n{color:#fff}
+.dark .snap{border-color:#5a4a22;background:#1f4e63}
+.dark .pend-actions button{background:transparent;border-color:#8a763f;color:var(--d-amber-text)}
+.dark .pend-actions button:hover{background:#3a2d14}
+.dark .pend-actions button.go{background:var(--d-amber);border-color:var(--d-amber);color:#1b1300;font-weight:650}
+.dark .pend-actions button.go:hover{background:#ffcb5c}
+.dark .handoff-note{background:#14283f;border-color:#2f5a8c;color:#cfe3ff}
+.dark button:focus-visible{outline-color:#9bbcf2}
+
+.feed{border:1px solid var(--d-line);border-radius:8px;overflow:hidden;background:#0a1118}
+.feed-head{display:flex;justify-content:space-between;align-items:center;font-size:12px;color:var(--d-muted);padding:5px 9px}
+.feed-head .ico{vertical-align:-2px;margin-right:5px}
+.feed-live{display:inline-flex;align-items:center;gap:6px;color:#ffb4b4;font-weight:650}
+.feed-live i{width:7px;height:7px;border-radius:50%;background:#ff6b6b;display:inline-block}
+.feed>svg{display:block;width:100%;height:auto}
+.feed-foot{font-size:11.5px;color:#8ea2b9;padding:5px 9px;line-height:1.35}
+.cam-hit{fill:transparent;stroke:transparent;cursor:pointer}
+.cam-hit:hover{stroke:#fff;stroke-dasharray:3 3;stroke-width:1.2}
+.cam-reading{animation:dash .8s linear infinite}
+@keyframes dash{to{stroke-dashoffset:-14}}
+
+.wb-surface{margin:16px;border:2px solid #cfd5dc;border-radius:6px;background:#fdfdfc;padding:14px 20px;font-family:Kalam,"Marker Felt","Segoe Print","Bradley Hand","Chalkboard SE","Comic Sans MS",cursive;color:#1f3c8f}
+.wb-line{display:flex;align-items:baseline;gap:16px;padding:10px 0;border-bottom:1px dashed #e1e5ea;flex-wrap:wrap}
+.wb-line:last-child{border-bottom:0}
+.wb-label{width:140px;font-size:22px;color:#222}
+.wb-val{font-size:36px;min-width:48px}
+.wb-tally{font-size:30px;letter-spacing:.03em;word-break:break-word}
+.wb-tools{display:flex;flex-wrap:wrap;gap:8px;align-items:center;padding:0 16px 14px}
+.wb-tools .muted{margin-right:4px}
+.bubble{margin:16px 16px 0;background:#f3f5f8;border-radius:10px;padding:10px 14px;font-size:15px}
+
+.ov{position:fixed;inset:0;background:rgba(18,24,33,.5);display:flex;align-items:center;justify-content:center;padding:20px;z-index:50}
+.ov.int{z-index:60;background:rgba(18,24,33,.66)}
+.dlg{background:#fff;border-radius:12px;max-width:560px;width:100%;max-height:calc(100vh - 40px);overflow:auto;padding:20px 22px;box-shadow:0 12px 40px rgba(0,0,0,.25)}
+.dlg.wide{max-width:800px}
+.dlg h2{font-size:20px}
+.cmp{display:grid;grid-template-columns:minmax(0,1fr) 300px;gap:16px;align-items:start;margin:8px 0}
+.cmp .mini-log{margin:0}
+.pick{display:grid;grid-template-columns:1fr;gap:6px;margin:12px 0}
+.pick button{justify-content:space-between;min-height:44px;text-align:left}
+.pick button b{font-variant-numeric:tabular-nums}
+.dlg-actions{display:flex;gap:8px;justify-content:flex-end;margin-top:14px;flex-wrap:wrap}
+.fld{display:flex;flex-direction:column;gap:6px;font-weight:600;margin:10px 0 4px}
+.result{border-radius:10px;padding:12px 14px;margin:10px 0;font-weight:550;display:flex;gap:8px;align-items:flex-start}
+.result.ok{background:var(--ok-bg);color:var(--ok-text);border:1px solid var(--ok-line)}
+.result.bad{background:var(--bad-bg);color:var(--bad-text);border:1px solid var(--bad-line)}
+.result .ico{flex:none;margin-top:2px}
+.mini-log{border:1px solid var(--line);border-radius:8px;padding:2px 8px;margin:8px 0}
+.mini-log .row{font-size:14px}
+.mini-log .row:last-child{border-bottom:0}
+.err{color:var(--bad-text);font-size:14px;min-height:20px;margin:4px 0 0}
+
+.int-dlg{max-width:640px;border-top:6px solid var(--int)}
+.int-who{font-size:14px;font-weight:700;color:var(--int-text);margin:0}
+.int-text{font-size:23px;font-weight:650;margin:6px 0 16px;line-height:1.3}
+.bar{height:10px;background:#eef1f5;border-radius:999px;overflow:hidden;margin-top:6px}
+.bar i{display:block;height:100%;width:0;background:var(--int);transition-property:width;transition-timing-function:linear}
+.opts{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:8px}
+.opts button{min-height:66px;line-height:1.25}
+.shake{animation:shake .32s}
+@keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-5px)}75%{transform:translateX(5px)}}
+
+.toast{position:fixed;left:50%;bottom:28px;transform:translate(-50%,16px);background:#1d2430;color:#fff;padding:10px 16px;border-radius:10px;font-weight:550;opacity:0;transition:opacity .2s,transform .2s;pointer-events:none;z-index:70;max-width:90vw;display:flex;align-items:center;gap:14px;box-shadow:0 6px 24px rgba(0,0,0,.3)}
+.toast.show{opacity:1;transform:translate(-50%,0)}
+.toast.show.act{pointer-events:auto}
+.toast button{min-height:30px;padding:3px 12px;background:transparent;border-color:#6b7a90;color:#ffd98a;font-weight:650}
+.toast button:hover{background:#2b3546}
+.toast button[hidden]{display:none}
+
+.screen{display:flex;justify-content:center;padding:36px 20px 20px}
+.card{background:#fff;border:1px solid var(--line);border-radius:14px;padding:28px 32px;max-width:760px;width:100%}
+.card.wide{max-width:1040px}
+.eyebrow{font-size:12px;font-weight:700;color:var(--accent-text);text-transform:uppercase;letter-spacing:.06em;margin:0 0 6px}
+.steps{padding-left:22px;margin:12px 0 14px}
+.steps li{margin:7px 0}
+.callout{background:#fff4ec;border:1px solid #f4c9a8;border-radius:10px;padding:12px 14px;margin:14px 0}
+.legend{display:flex;flex-wrap:wrap;gap:8px 18px;background:#0f1721;color:#e8eef5;border-radius:10px;padding:10px 14px;margin:12px 0;font-size:14px}
+.legend span{display:inline-flex;align-items:center;gap:8px}
+.lg{width:26px;height:17px;border-radius:3px;display:inline-block;background:#f6f3ea;flex:none}
+.lg.g{outline:2px solid var(--d-green);outline-offset:2px}
+.lg.a{outline:2px solid var(--d-amber);outline-offset:2px}
+.go{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-top:18px}
+fieldset{border:1px solid var(--line);border-radius:10px;padding:8px 14px 10px;margin:14px 0}
+legend{font-weight:650;padding:0 6px}
+.lk{display:grid;grid-template-columns:minmax(0,1fr) auto auto;gap:8px;align-items:end;padding:10px 0;border-top:1px solid var(--line)}
+.lk:first-of-type{border-top:0}
+.lk b{display:block;margin-bottom:5px}
+.lk input{font-size:13px;color:var(--muted);min-height:38px}
+.lk button{min-height:38px}
+.lk-note{display:block;font-style:normal;font-size:13px;color:var(--muted);margin:-2px 0 6px}
+.spare{margin:14px 0 4px}
+.spare summary{cursor:pointer;color:var(--muted);font-size:14px;padding:6px 0}
+.spare .lk:first-of-type{border-top:0}
+.saved{margin-top:18px;padding-top:14px;border-top:1px solid var(--line);font-size:14px;color:var(--muted);display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.saved button{min-height:32px;padding:4px 10px;font-size:13px}
+.q{margin:20px 0}
+.q-t{font-weight:650;margin:0 0 8px}
+.q-opts{display:flex;flex-wrap:wrap;gap:8px}
+.q-opts label{display:inline-flex;align-items:center;gap:7px;border:1px solid var(--line2);border-radius:8px;padding:8px 12px;cursor:pointer;background:#fff}
+.q-opts label:has(input:checked){border-color:var(--accent);background:var(--accent-bg)}
+.q-opts input{margin:0}
+.sus{border:1px solid var(--line);border-radius:10px;overflow:hidden}
+.sus-row{display:grid;grid-template-columns:minmax(0,1fr) repeat(5,56px);align-items:center;border-top:1px solid var(--line);padding:0 6px 0 14px}
+.sus-row:first-child{border-top:0}
+.sus-row.missing{background:var(--bad-bg)}
+.sus-head{background:#f6f7f9;font-size:12px;color:var(--muted);font-weight:600;padding-top:8px;padding-bottom:8px}
+.sus-head span{text-align:center;line-height:1.2}
+.sus-t{padding:10px 12px 10px 0;font-size:15px}
+.sus-c{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;padding:8px 0;cursor:pointer;font-size:12px;color:var(--muted);border-radius:6px}
+.sus-c:hover{background:#eef3fc}
+.sus-c input{margin:0;width:18px;height:18px}
+.res-actions{display:flex;gap:8px;flex-wrap:wrap;margin:14px 0 4px}
+.res-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:12px;margin-top:16px}
+.res-sec{border:1px solid var(--line);border-radius:10px;padding:12px 14px}
+.res-sec h3{font-size:12px;margin:0 0 8px;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;font-weight:700}
+.kv{display:flex;justify-content:space-between;align-items:baseline;gap:12px;padding:5px 0;border-bottom:1px dashed #e6e9ee;font-size:14px}
+.kv:last-child{border-bottom:0}
+.kv span{color:var(--muted);flex:1 1 auto;min-width:0}
+.kv b{font-weight:650;text-align:right;flex:0 0 auto;max-width:58%}
+.kv b.good{color:var(--ok-text)}
+.kv b.badv{color:var(--bad-text)}
+.facd{margin-top:18px;border-top:1px solid var(--line);padding-top:14px}
+.facd>summary{color:var(--muted)}
+details{margin-top:16px}
+summary{cursor:pointer;font-weight:600}
+.logtable{border-collapse:collapse;width:100%;font-size:12.5px;margin-top:8px}
+.logtable td,.logtable th{padding:4px 6px;border-bottom:1px solid #eef0f3;text-align:left;vertical-align:top}
+.foot{text-align:center;padding:6px 0 18px}
+.foot button{min-height:auto;padding:4px 10px;font-size:12px;color:var(--faint)}
+@media (max-width:1100px){.b-main{grid-template-columns:260px minmax(0,1fr)}}
+@media (max-width:1000px){.work{grid-template-columns:1fr}.b-main{grid-template-columns:1fr}.big-num{font-size:84px}.cmp{grid-template-columns:1fr}}
+@media (max-width:560px){.opts{grid-template-columns:1fr 1fr}.cart{grid-template-columns:1fr}.card{padding:22px 18px}.lk{grid-template-columns:1fr 1fr}.lk>div{grid-column:1/-1}}
+@media (max-height:820px) and (min-width:1001px){.rq-done{display:none}.rq-text{font-size:17px;margin:3px 0 6px}.hand-empty{padding:3px 0}.cart{gap:5px}.pk{min-height:46px}.pk-body{padding:4px 10px;gap:3px}.work .col:first-child>.panel{padding:9px 13px}}
+@media (prefers-reduced-motion:reduce){.cam-reading,.dark .pend.late{animation:none}}
+</style>
+</head>
+<body>
+<noscript><p style="padding:20px">This prototype needs JavaScript turned on.</p></noscript>
+<div id="top"></div>
+<div id="main"></div>
+<div class="foot"><button class="ghost" data-act="fac" id="facBtn">Facilitator</button></div>
+<div id="modal"></div>
+<div id="interrupt"></div>
+<div id="toast" class="toast" role="status" aria-live="polite"><span id="toastMsg"></span><button id="toastBtn" data-act="undo" hidden>Undo</button></div>
+<script>
+(function () {
+'use strict';
+
+var ITEMS = {
+  v0:     { name: '0 Vicryl', n: 1, mat: 'Vicryl', needle: 'CT-1 needle', code: 'CT-1' },
+  v20:    { name: '2-0 Vicryl', n: 1, mat: 'Vicryl', needle: 'SH needle', code: 'SH' },
+  v30:    { name: '3-0 Vicryl', n: 1, mat: 'Vicryl', needle: 'SH needle', code: 'SH' },
+  m40:    { name: '4-0 Monocryl', n: 1, mat: 'Monocryl', needle: 'PS-2 needle', code: 'PS-2' },
+  m30da:  { name: '3-0 Monocryl, double-armed', n: 2, mat: 'Monocryl', needle: 'RB-1 needles', code: 'RB-1', da: true },
+  s20:    { name: '2-0 Silk', n: 1, mat: 'Silk', needle: 'SH needle', code: 'SH' },
+  p40da:  { name: '4-0 Prolene, double-armed', n: 2, mat: 'Prolene', needle: 'BB needles', code: 'BB', da: true },
+  vl30da: { name: '3-0 V-Loc, double-armed', n: 2, mat: 'V-Loc', needle: 'GS-21 needles', code: 'GS-21', da: true }
+};
+var CART = ['v0', 'v20', 'v30', 'm40', 'm30da', 's20', 'p40da', 'vl30da'];
+var MAT_COLOR = { Vicryl: '#7a4fb5', Monocryl: '#8f99a6', Prolene: '#2b63c6', Silk: '#262a30', 'V-Loc': '#2c8a57' };
+
+var MODES = {
+  camera: { label: 'Camera-assisted', short: 'Camera' },
+  whiteboard: { label: 'Whiteboard (current process)', short: 'Whiteboard' }
+};
+
+var SCEN = {
+  practice: {
+    label: 'Practice', initial: 8, practice: true,
+    steps: [
+      { who: 'Scrub nurse', text: 'Can I get a 2-0 Vicryl?', items: ['v20'] },
+      { who: 'Surgeon', text: '4-0 Prolene, double-armed, please.', items: ['p40da'], pause: 4500 }
+    ]
+  },
+  s1: {
+    label: 'Scenario 1', initial: 8,
+    steps: [
+      { who: 'Scrub nurse', text: 'Can I get a 2-0 Vicryl?', items: ['v20'] },
+      { who: 'Surgeon', text: '3-0 Monocryl, double-armed, please.', items: ['m30da'] },
+      { who: 'Scrub nurse', text: 'I need a 4-0 Monocryl and a 3-0 Vicryl.', items: ['m40', 'v30'], interrupt: true },
+      { who: 'Surgeon', text: 'Closing now. I need a 4-0 Prolene double-armed, a 2-0 Silk, and a 0 Vicryl.', items: ['p40da', 's20', 'v0'], cam: { p40da: 'misread', s20: 'miss', v0: 'unreadable' }, pause: 15000 }
+    ],
+    interrupt: {
+      who: 'Anesthesia', text: 'Can you grab an upper body warming blanket? We need it now.',
+      walk: 'Walking to the supply room', prompt: 'Find the upper body warming blanket.',
+      options: ['Lower body warming blanket', 'Pressure bag', 'Upper body warming blanket', 'IV pole', 'Suction canister', 'Sharps container'],
+      answer: 'Upper body warming blanket', done: 'Hand it to anesthesia'
+    }
+  },
+  s2: {
+    label: 'Scenario 2', initial: 8,
+    steps: [
+      { who: 'Scrub nurse', text: 'Can I get a 0 Vicryl?', items: ['v0'] },
+      { who: 'Surgeon', text: '3-0 V-Loc, double-armed, please.', items: ['vl30da'] },
+      { who: 'Scrub nurse', text: 'I need a 2-0 Silk and a 4-0 Monocryl.', items: ['s20', 'm40'], interrupt: true },
+      { who: 'Surgeon', text: 'Closing now. I need a 3-0 Monocryl double-armed, a 3-0 Vicryl, and a 2-0 Vicryl.', items: ['m30da', 'v30', 'v20'], cam: { m30da: 'misread', v30: 'miss', v20: 'unreadable' }, pause: 15000 }
+    ],
+    interrupt: {
+      who: 'Surgeon', text: 'Can you turn on overhead light 2? I can’t see anything.',
+      walk: 'Going to the light controls', prompt: 'Find the switch for overhead light 2.',
+      options: ['Overhead light 1', 'Room lights', 'Overhead light 2', 'Headlight', 'Monitor 2', 'Exam light'],
+      answer: 'Overhead light 2', done: 'Back to the room'
+    }
+  }
+};
+var SCEN_PARAM = { practice: 'practice', '1': 's1', '2': 's2' };
+
+var STANDARD = [
+  { mode: 'camera', scen: 'practice', label: 'Practice' },
+  { mode: 'camera', scen: 's1', label: 'Scored run' }
+];
+var SPARE = [
+  { mode: 'camera', scen: 's2', label: 'Second scenario', note: 'Use it if a scored run has to be redone.' },
+  { mode: 'whiteboard', scen: 's1', label: 'Today’s whiteboard', note: 'The current process, for demos.' }
+];
+
+var HANDOFFS = {
+  s1: {
+    room: 'OR 9', from: 'Jordan', clock: '10:24', initial: 6, lastMatch: '9:50', sponges: 20, instruments: 38,
+    entries: [
+      { time: '8:52', itemId: 'v20' },
+      { time: '9:20', itemId: 'm30da' },
+      { time: '9:47', itemId: 'm40' },
+      { time: '10:05', itemId: 'v0', source: 'manual' },
+      { time: '10:18', itemId: 'vl30da', pending: true }
+    ],
+    opts: ['m30da', 'v0', 'vl30da', 'm40']
+  },
+  s2: {
+    room: 'OR 4', from: 'Priya', clock: '9:38', initial: 5, lastMatch: '9:05', sponges: 30, instruments: 44,
+    entries: [
+      { time: '8:10', itemId: 'm40' },
+      { time: '8:34', itemId: 'p40da' },
+      { time: '8:58', itemId: 's20' },
+      { time: '9:17', itemId: 'v30', source: 'manual' },
+      { time: '9:31', itemId: 'm30da', pending: true }
+    ],
+    opts: ['p40da', 'v30', 'm30da', 's20']
+  }
+};
+function handoffDef() { return HANDOFFS[S.scen] || HANDOFFS.s1; }
+function probeList() {
+  var h = handoffDef();
+  var last = h.entries[h.entries.length - 1].itemId;
+  var total = h.initial + h.entries.reduce(function (a, x) { return a + ITEMS[x.itemId].n; }, 0);
+  var nDa = h.entries.filter(function (x) { return ITEMS[x.itemId].da; }).length;
+  var opts = h.opts.map(function (id) { return [id, ITEMS[id].name]; }).concat([['unsure', 'Not sure']]);
+  return [
+    { key: 'needles', type: 'number', text: 'How many needles should be on the field in ' + h.room + ' right now?', truth: String(total) },
+    { key: 'recent', type: 'choice', text: 'What was the most recent suture added?', truth: last, options: opts },
+    { key: 'da', type: 'choice', text: 'How many double-armed sutures have been added in this case?', truth: String(nDa),
+      options: [['0', '0'], ['1', '1'], ['2', '2'], ['3', '3'], ['unsure', 'Not sure']] },
+    { key: 'check', type: 'choice', text: 'If the next count comes up 2 needles short, which addition would you check first?', truth: last, options: opts },
+    { key: 'conf', type: 'choice', text: 'How confident are you in your answers?',
+      options: [['1', '1 (not at all)'], ['2', '2'], ['3', '3'], ['4', '4'], ['5', '5 (very)']] }
+  ];
+}
+
+var SUS = [
+  'I think that I would like to use this system frequently.',
+  'I found the system unnecessarily complex.',
+  'I thought the system was easy to use.',
+  'I think that I would need the support of a technical person to be able to use this system.',
+  'I found the various functions in this system were well integrated.',
+  'I thought there was too much inconsistency in this system.',
+  'I would imagine that most people would learn to use this system very quickly.',
+  'I found the system very cumbersome to use.',
+  'I felt very confident using the system.',
+  'I needed to learn a lot of things before I could get going with this system.'
+];
+var CAMQ = [
+  ['trust', 'I could rely on the camera’s suggestions.'],
+  ['aware', 'I always knew what the camera had and had not counted.'],
+  ['comfort', 'I would be comfortable having this camera system in my operating room.']
+];
+
+var ICONS = {
+  check: '<path d="M5 12.5l4.5 4.5L19 7.5"/>',
+  x: '<path d="M6 6l12 12M18 6L6 18"/>',
+  edit: '<path d="M4 20h4L19 9l-4-4L4 16z"/><path d="M13.5 6.5l4 4"/>',
+  plus: '<path d="M12 5v14M5 12h14"/>',
+  alert: '<path d="M12 4l9.5 16h-19z"/><path d="M12 10v4.5M12 17.5v.01"/>',
+  camera: '<path d="M4 8h3.5l2-2.5h5l2 2.5H20v11H4z"/><circle cx="12" cy="13" r="3.5"/>',
+  swap: '<path d="M7 8h13l-3.5-3.5M17 16H4l3.5 3.5"/>',
+  list: '<path d="M10 6h10M10 12h10M10 18h10"/><path d="M4 6l1.2 1.2L7.5 5M4 12l1.2 1.2L7.5 11M4 18l1.2 1.2L7.5 17"/>',
+  clock: '<circle cx="12" cy="12" r="8.5"/><path d="M12 7.5V12l3 2"/>',
+  help: '<circle cx="12" cy="12" r="8.5"/><path d="M9.6 9.5a2.5 2.5 0 1 1 3.6 2.2c-.8.4-1.2 1-1.2 1.8M12 16.6v.01"/>',
+  copy: '<rect x="8" y="8" width="11" height="11" rx="2"/><path d="M16 8V5H5v11h3"/>'
+};
+function icon(name, size) {
+  size = size || 18;
+  return '<svg class="ico" viewBox="0 0 24 24" width="' + size + '" height="' + size + '" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' + ICONS[name] + '</svg>';
+}
+
+var S = null;
+var token = 0;
+var orderSeq = 0;
+var clockTimer = null, toastTimer = null, intTimer = null;
+var setupVals = { pid: '' };
+var FONT = 'system-ui,-apple-system,Segoe UI,sans-serif';
+
+function now() { return performance.now(); }
+function $(id) { return document.getElementById(id); }
+function esc(s) {
+  return String(s).replace(/[&<>"']/g, function (c) {
+    return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c];
+  });
+}
+function plural(n, one, many) { return n === 1 ? one : many; }
+function needlesWord(n) { return n + ' ' + plural(n, 'needle', 'needles'); }
+function baseName(it) { return it.name.replace(', double-armed', ''); }
+function fmt(m) { var h = Math.floor(m / 60), mm = m % 60; return h + ':' + String(mm).padStart(2, '0'); }
+function toMin(s) { var p = s.split(':'); return (+p[0]) * 60 + (+p[1]); }
+function median(arr) {
+  var a = arr.filter(function (x) { return typeof x === 'number' && isFinite(x); }).sort(function (x, y) { return x - y; });
+  if (!a.length) return null;
+  var m = Math.floor(a.length / 2);
+  return a.length % 2 ? a[m] : (a[m - 1] + a[m]) / 2;
+}
+function r1(x) { return x === null || x === undefined || !isFinite(x) ? null : Math.round(x * 10) / 10; }
+function secStr(x) { return r1(x) === null ? 'n/a' : r1(x) + ' s'; }
+function mmss(sec) { sec = Math.max(0, Math.round(sec)); return Math.floor(sec / 60) + ':' + String(sec % 60).padStart(2, '0'); }
+
+/* ---------- drawings ---------- */
+function bars(seed, w, h) {
+  var s = 0, i;
+  for (i = 0; i < seed.length; i++) s = (Math.imul(s, 31) + seed.charCodeAt(i)) >>> 0;
+  var x = 0, out = '';
+  while (x < w - 2) {
+    s = (Math.imul(s, 1103515245) + 12345) >>> 0;
+    var bw = 1 + ((s >>> 16) % 3);
+    out += '<rect x="' + x + '" y="0" width="' + bw + '" height="' + h + '"/>';
+    x += bw + 1 + ((s >>> 24) % 2);
+  }
+  return out;
+}
+function barcodeSVG(seed, w) {
+  w = w || 48;
+  return '<svg class="barcode" viewBox="0 0 60 12" width="' + w + '" height="12" preserveAspectRatio="none" aria-hidden="true" fill="currentColor">' + bars(seed, 60, 12) + '</svg>';
+}
+function packetInner(id, big) {
+  var it = ITEMS[id];
+  var meta = it.da ? '<span class="pk-da">Double-armed</span><span class="pk-meta">' + esc(big ? it.needle : it.code) + '</span>' : '<span class="pk-meta">' + esc(it.needle) + '</span>';
+  return '<span class="pk-band" style="background:' + MAT_COLOR[it.mat] + '"></span>' +
+    '<span class="pk-body"><span class="pk-top"><span class="pk-name">' + esc(baseName(it)) + '</span>' + barcodeSVG(id, big ? 70 : 48) + '</span>' +
+    '<span class="pk-bot">' + meta + '</span></span>';
+}
+var DRAPE = '<rect width="100%" height="100%" fill="#22566b"/><path d="M-10 40C60 30 120 52 260 38M-10 104C70 92 150 118 260 100" stroke="#2f6a82" stroke-width="5" fill="none" opacity=".55"/>';
+function snapSVG(e) {
+  var it = ITEMS[e.trueItem || e.itemId];
+  var s = '<svg viewBox="0 0 132 88" width="132" height="88" role="img" aria-label="Camera snapshot of the packet">' + DRAPE + '<g transform="rotate(-5 66 44)">';
+  if (e.wasUnreadable) {
+    s += '<rect x="14" y="14" width="104" height="60" rx="4" fill="#e9e5d8" stroke="#b9b29f"/>' +
+      '<path d="M14 44h104" stroke="#d2ccba" stroke-width="1.2"/>' +
+      '<path d="M44 14h24L38 74H14z" fill="#fff" opacity=".6"/></g>' +
+      '<circle cx="66" cy="44" r="16" fill="#0f1721" opacity=".82"/>' +
+      '<text x="66" y="52" text-anchor="middle" font-size="23" font-weight="700" fill="#f6b93b" font-family="' + FONT + '">?</text>';
+    return s + '</svg>';
+  }
+  s += '<rect x="14" y="14" width="104" height="60" rx="4" fill="#fbfaf6" stroke="#aab2bc"/>' +
+    '<rect x="14" y="14" width="8" height="60" fill="' + MAT_COLOR[it.mat] + '"/>' +
+    '<text x="28" y="32" font-size="12.5" font-weight="700" fill="#1d2127" font-family="' + FONT + '">' + esc(baseName(it)) + '</text>' +
+    (it.da
+      ? '<rect x="27" y="39" width="66" height="14" rx="3" fill="#fbe0cf"/><text x="31" y="49.5" font-size="9.5" font-weight="700" fill="#7a2e0e" font-family="' + FONT + '">Double-armed</text>'
+      : '<text x="28" y="49" font-size="9.5" fill="#3f4650" font-family="' + FONT + '">' + esc(it.needle) + '</text>') +
+    '<g fill="#2a2f36" transform="translate(28 58)">' + bars(e.trueItem || e.itemId, 62, 10) + '</g>' +
+    '<rect x="25" y="20" width="' + (baseName(it).length * 7 + 8) + '" height="16" rx="2" fill="none" stroke="#2fae6a" stroke-width="1.4"/>';
+  if (e.misread) {
+    s += '<rect x="20" y="37" width="96" height="21" rx="10.5" fill="#5aa7d6" stroke="#3d8cbd" transform="rotate(7 66 47)"/>' +
+      '<path d="M34 44c18 3 42 6 68 9" stroke="#8ec8ea" stroke-width="2" fill="none" stroke-linecap="round" opacity=".8"/>' +
+      '<rect x="18" y="35" width="100" height="26" rx="3" fill="none" stroke="#f6b93b" stroke-width="1.4" stroke-dasharray="4 3"/>';
+  } else {
+    s += '<rect x="25" y="38" width="70" height="16" rx="2" fill="none" stroke="#2fae6a" stroke-width="1.4"/>';
+  }
+  return s + '</g></svg>';
+}
+function slotPos(i) { return { cx: 30 + (i % 4) * 60, cy: 38 + Math.floor(i / 4) * 58 }; }
+function tilt(id) { return ((Math.imul(id + 11, 2654435761) >>> 0) % 13) - 6; }
+function reconcile() {
+  var conf = S.entries.filter(function (e) { return e.status === 'confirmed'; });
+  var linked = {}, used = {}, extra = [];
+  conf.forEach(function (e) {
+    if (e.packetId != null && !linked[e.packetId]) { linked[e.packetId] = e; used[e.id] = true; }
+  });
+  conf.filter(function (e) { return !used[e.id]; }).sort(function (a, b) { return a.createdAt - b.createdAt; }).forEach(function (e) {
+    var p = S.packets.filter(function (x) { return !linked[x.id] && x.itemId === e.itemId; })[0];
+    if (p) linked[p.id] = e; else extra.push(e);
+  });
+  return { conf: conf, linked: linked, extra: extra };
+}
+function packetView(d, p, R) {
+  if (d !== S) {
+    var he = findEntry(d, p.entryId);
+    if (he && he.status === 'confirmed') return { st: 'counted', n: he.needles };
+    if (he && he.status === 'pending') return { st: 'pending', n: he.needles };
+    return { st: 'none' };
+  }
+  if (p.cam === 'reading') return { st: 'reading' };
+  var le = R.linked[p.id];
+  if (le) return { st: 'counted', n: le.needles };
+  var pe = S.entries.filter(function (e) { return e.status === 'pending' && e.packetId === p.id; })[0];
+  if (pe) return pe.unreadable ? { st: 'unread' } : { st: 'pending', n: pe.needles };
+  return { st: 'none' };
+}
+function feedSVG(d, clickable) {
+  var R = d === S ? reconcile() : null;
+  var list = d.packets.slice(0, 16);
+  var H = 66 + (Math.max(2, Math.ceil(list.length / 4)) - 1) * 58;
+  var out = '<svg viewBox="0 0 240 ' + H + '" role="img" aria-label="Camera view of the back table">' + DRAPE;
+  if (!list.length) out += '<text x="120" y="' + (H / 2 + 3) + '" text-anchor="middle" font-size="9.5" fill="#cfe0ea" opacity=".8" font-family="' + FONT + '">Nothing opened yet</text>';
+  list.forEach(function (p, i) {
+    var pos = slotPos(i), cx = pos.cx, cy = pos.cy, it = ITEMS[p.itemId], v = packetView(d, p, R);
+    var px = cx - 23, py = cy - 12.5;
+    var g = '<g transform="rotate(' + tilt(p.id) + ' ' + cx + ' ' + cy + ')">';
+    if (p.kind === 'unreadable') {
+      g += '<rect x="' + px + '" y="' + py + '" width="46" height="25" rx="2.2" fill="#e9e5d8" stroke="#b9b29f" stroke-width=".8"/>' +
+        '<path d="M' + px + ' ' + cy + 'h46" stroke="#d2ccba" stroke-width=".8"/>' +
+        '<path d="M' + (cx - 10) + ' ' + py + 'h11l-13 25h-11z" fill="#fff" opacity=".6"/>';
+    } else {
+      g += '<rect x="' + px + '" y="' + py + '" width="46" height="25" rx="2.2" fill="#f6f3ea" stroke="#c9c2af" stroke-width=".8"/>' +
+        '<rect x="' + px + '" y="' + py + '" width="5" height="25" fill="' + MAT_COLOR[it.mat] + '"/>' +
+        '<rect x="' + (cx - 14) + '" y="' + (cy - 8) + '" width="26" height="3" fill="#3a3f47"/>' +
+        (it.da ? '<rect x="' + (cx - 14) + '" y="' + (cy - 2.5) + '" width="21" height="5.5" rx="1.4" fill="#e9844a"/>' : '<rect x="' + (cx - 14) + '" y="' + (cy - 1.5) + '" width="16" height="2.2" fill="#7b818a"/>') +
+        '<rect x="' + (cx - 14) + '" y="' + (cy + 6) + '" width="22" height="3" fill="#55595f" opacity=".7"/>';
+      if (p.kind === 'misread') g += '<rect x="' + (cx - 20) + '" y="' + (cy - 5) + '" width="44" height="10" rx="5" fill="#5aa7d6" stroke="#3d8cbd" stroke-width=".7" transform="rotate(7 ' + cx + ' ' + cy + ')"/>';
+    }
+    g += '</g>';
+    var bx = cx - 27, by = cy - 19, tag = null, col = null, box = '', dims = ' x="' + bx + '" y="' + by + '" width="54" height="38" rx="3.5"';
+    if (v.st === 'reading') { box = '<rect class="cam-reading"' + dims + ' fill="none" stroke="#d6e6ff" stroke-width="1.4" stroke-dasharray="4 3"/>'; tag = 'Reading…'; col = '#d6e6ff'; }
+    else if (v.st === 'pending') { box = '<rect' + dims + ' fill="none" stroke="#f6b93b" stroke-width="2.2"/>'; tag = 'Confirm ×' + v.n; col = '#f6b93b'; }
+    else if (v.st === 'unread') { box = '<rect' + dims + ' fill="none" stroke="#f6b93b" stroke-width="2.2" stroke-dasharray="5 3"/>'; tag = 'Can’t read'; col = '#f6b93b'; }
+    else if (v.st === 'counted') { box = '<rect' + dims + ' fill="none" stroke="#57d18c" stroke-width="1.6"/>'; tag = '✓ ×' + v.n; col = '#57d18c'; }
+    else if (clickable) { box = '<rect class="cam-hit" data-act="feedadd" data-pid="' + p.id + '"' + dims + '><title>Not on the board. Click to add it.</title></rect>'; }
+    if (tag) {
+      box += '<rect x="' + bx + '" y="' + (by - 10.5) + '" width="' + (tag.length * 4.1 + 7) + '" height="11.5" rx="2" fill="' + col + '"/>' +
+        '<text x="' + (bx + 3.5) + '" y="' + (by - 2) + '" font-size="7.6" font-weight="700" fill="#0f1c26" font-family="' + FONT + '">' + esc(tag) + '</text>';
+    }
+    out += g + box;
+  });
+  return out + '</svg>';
+}
+function feedHTML(d, clickable) {
+  return '<div class="feed"><div class="feed-head"><span>' + icon('camera', 14) + 'Back table camera</span><span class="feed-live"><i></i>Live</span></div>' +
+    feedSVG(d, clickable) +
+    '<div class="feed-foot">Green box: counted. Amber box: needs you. No box: not on the board.</div></div>';
+}
+function confHTML(e) {
+  var high = e.conf === 'High';
+  return '<span class="conf"><span class="conf-bars" aria-hidden="true"><i class="on" style="height:6px"></i><i class="on" style="height:10px"></i><i class="' + (high ? 'on' : '') + '" style="height:14px"></i></span>' +
+    (high ? 'High confidence: label fully read' : 'Medium confidence: part of the label is covered') + '</span>';
+}
+
+function clearToast() {
+  clearTimeout(toastTimer);
+  var t = $('toast');
+  if (t) t.classList.remove('show', 'act');
+  if (S) S.undo = null;
+}
+function toast(msg, undo) {
+  var t = $('toast');
+  $('toastMsg').textContent = msg;
+  $('toastBtn').hidden = !undo;
+  t.classList.add('show');
+  t.classList.toggle('act', !!undo);
+  if (S) S.undo = undo || null;
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(function () { t.classList.remove('show', 'act'); if (S) S.undo = null; }, undo ? 6000 : 2600);
+}
+
+/* ---------- state ---------- */
+function newRun(pid, mode, scen) {
+  token += 1;
+  orderSeq = 0;
+  var sc = SCEN[scen];
+  S = {
+    token: token, pid: pid || '', mode: mode, scen: scen, phase: 'intro',
+    runId: Date.now().toString(36).toUpperCase(), started: new Date(),
+    initial: sc.initial, sponges: 20, instruments: 42, room: 'OR 7',
+    clockBase: 10 * 60 + 2, t0: 0, seq: 0,
+    stepIndex: -1, steps: [], hand: null, packets: [], entries: [], tallies: [],
+    lastMatch: '10:02', lastMatchNote: 'initial count', lastMatchAt: 0,
+    modal: null, interrupt: null, undo: null,
+    count: { requested: false, requestAt: 0, scrub: null, boardAtRequest: null, pendingAtRequest: null, attempts: [], resolved: false, skipped: false, resolvedAt: 0, saidMatch: false },
+    flags: {}, log: [], hd: null, probe: {}, survey: {}, handoffStart: 0, handoffReviewed: 0, caseEnd: 0, saved: false
+  };
+}
+function log(type, data) {
+  var t = S.t0 ? Math.round((now() - S.t0) / 100) / 10 : 0;
+  var rec = { t: t, type: type };
+  if (data) Object.keys(data).forEach(function (k) { rec[k] = data[k]; });
+  S.log.push(rec);
+}
+function simMin(t) { return S.clockBase + Math.floor(((t === undefined ? now() : t) - S.t0) / 60000); }
+function clockText() {
+  if (!S) return '';
+  if (S.phase === 'handoff') return S.hd.clock;
+  return S.t0 ? fmt(simMin()) : fmt(S.clockBase);
+}
+function tick() {
+  var txt = clockText(), t = now();
+  document.querySelectorAll('.js-clock').forEach(function (el) { el.textContent = txt; });
+  document.querySelectorAll('.js-wait').forEach(function (el) { el.textContent = 'waiting ' + mmss((t - parseFloat(el.getAttribute('data-since'))) / 1000); });
+  document.querySelectorAll('.pend[data-created]').forEach(function (el) {
+    el.classList.toggle('late', (t - parseFloat(el.getAttribute('data-created'))) / 1000 >= 20);
+  });
+}
+function startClock() { clearInterval(clockTimer); clockTimer = setInterval(tick, 1000); }
+function activeData() { return S.phase === 'handoff' ? S.hd : S; }
+function confirmedSum(d) { return d.entries.reduce(function (a, e) { return a + (e.status === 'confirmed' ? e.needles : 0); }, 0); }
+function pendingList(d) { return d.entries.filter(function (e) { return e.status === 'pending'; }); }
+function pendingSum(d) { return pendingList(d).reduce(function (a, e) { return a + (e.needles || 0); }, 0); }
+function pendingUnknown(d) { return pendingList(d).filter(function (e) { return e.unreadable; }).length; }
+function tallySum(d) { return d.tallies.reduce(function (a, t) { return a + t.n; }, 0); }
+function boardTotal() { return S.initial + (S.mode === 'whiteboard' ? tallySum(S) : confirmedSum(S)); }
+function truthNeedles() { return S.initial + S.packets.reduce(function (a, p) { return a + p.n; }, 0); }
+function findEntry(d, id) { return d.entries.filter(function (e) { return String(e.id) === String(id); })[0]; }
+
+/* ---------- rendering ---------- */
+function render() {
+  if (!S || S.phase !== 'case') clearToast();
+  renderTop(); renderMain(); renderModal(); renderInterrupt();
+}
+function renderTop() { $('top').innerHTML = topHTML(); }
+function renderMain() { $('main').innerHTML = mainHTML(); afterMain(); }
+function renderModal() {
+  $('modal').innerHTML = S && S.modal ? modalHTML() : '';
+  var f = document.querySelector('#modal [data-autofocus]');
+  if (f) f.focus();
+}
+function renderInterrupt() {
+  $('interrupt').innerHTML = S && S.interrupt ? interruptHTML() : '';
+  if (S && S.interrupt && S.interrupt.stage === 'walk') {
+    setTimeout(function () {
+      var b = document.querySelector('.bar i');
+      if (b) { b.style.transitionDuration = '4s'; b.style.width = '100%'; }
+    }, 40);
+  }
+}
+function topHTML() {
+  if (S && (S.phase === 'case' || S.phase === 'handoff')) {
+    var role = S.phase === 'case' ? 'You’re the circulating nurse in <b>' + S.room + '</b>' : 'Relief handoff · taking over <b>' + S.hd.room + '</b>';
+    return '<div class="topbar"><span class="tb-role"><span class="tb-dot"></span>' + role + '</span>' +
+      '<span>' + icon('clock', 16) + ' <span class="js-clock">' + clockText() + '</span></span></div>';
+  }
+  return '<div class="topbar"><span><b>Needle count board</b> · prototype</span><span class="small">ESE 5430 · Group 5</span></div>';
+}
+function mainHTML() {
+  if (!S) return setupHTML();
+  switch (S.phase) {
+    case 'intro': return introHTML();
+    case 'case': return caseHTML();
+    case 'practiceDone': return practiceDoneHTML();
+    case 'handoffIntro': return handoffIntroHTML();
+    case 'handoff': return handoffHTML();
+    case 'probe': return probeHTML();
+    case 'survey': return surveyHTML();
+    case 'results': return resultsHTML();
+  }
+  return '';
+}
+function afterMain() {
+  var facBtn = $('facBtn');
+  if (facBtn) facBtn.style.visibility = S ? 'visible' : 'hidden';
+  if (!S) { updateLinks(); return; }
+  if (S.phase === 'results' && !S.saved) saveRun();
+}
+
+/* ---------- setup ---------- */
+function savedRuns() {
+  try { return JSON.parse(localStorage.getItem('ncbRuns') || '[]'); } catch (e) { return []; }
+}
+function saveRun() {
+  S.saved = true;
+  try {
+    var runs = savedRuns();
+    runs.push({ runId: S.runId, pid: S.pid, mode: S.mode, scen: S.scen, when: new Date().toISOString(), text: resultsText() });
+    localStorage.setItem('ncbRuns', JSON.stringify(runs.slice(-60)));
+  } catch (e) { }
+}
+function linkRow(r, n) {
+  var title = (n ? n + '. ' : '') + r.label;
+  return '<div class="lk"><div><b>' + esc(title) + '</b>' + (r.note ? '<i class="lk-note">' + esc(r.note) + '</i>' : '') +
+    '<input type="text" readonly class="js-link" data-mode="' + r.mode + '" data-scen="' + r.scen + '" aria-label="Link for ' + esc(r.label) + '"></div>' +
+    '<button data-act="copylink" data-mode="' + r.mode + '" data-scen="' + r.scen + '">' + icon('copy', 16) + 'Copy</button>' +
+    '<button data-act="openrun" data-mode="' + r.mode + '" data-scen="' + r.scen + '">Open here</button></div>';
+}
+function setupHTML() {
+  var runs = savedRuns();
+  var links = STANDARD.map(function (r, i) { return linkRow(r, i + 1); }).join('');
+  var spare = SPARE.map(function (r) { return linkRow(r, 0); }).join('');
+  return '<div class="screen"><div class="card">' +
+    '<p class="eyebrow">Facilitator setup</p><h1>Set up a session</h1>' +
+    '<p class="muted">Every participant gets the same session, a short practice and then one scored run. Enter the participant ID and paste each link into the meeting chat when it’s time for that step.</p>' +
+    '<label class="fld">Participant ID<input type="text" id="sPid" placeholder="P1" value="' + esc(setupVals.pid) + '" autocomplete="off"></label>' +
+    '<fieldset><legend>Links for the session</legend>' + links + '</fieldset>' +
+    '<p class="small muted">“Open here” runs that step on this computer, for when you share your own screen or hand over your laptop.</p>' +
+    '<details class="spare"><summary>Spare links, outside the standard session</summary>' + spare + '</details>' +
+    '<div class="saved"><span>Results saved in this browser: ' + runs.length + '</span>' +
+    (runs.length ? '<button data-act="copyall">' + icon('copy', 14) + ' Copy all</button><button class="ghost" data-act="clearall">Clear</button>' : '') +
+    '</div></div></div>';
+}
+function readSetup() {
+  var pid = $('sPid');
+  if (pid) setupVals.pid = pid.value.trim();
+}
+function runLink(mode, scen) {
+  var base = location.href.split('#')[0].split('?')[0];
+  var scenParam = scen === 'practice' ? 'practice' : scen.slice(1);
+  return base + '?mode=' + encodeURIComponent(mode) + '&scenario=' + scenParam + (setupVals.pid ? '&pid=' + encodeURIComponent(setupVals.pid) : '');
+}
+function updateLinks() {
+  readSetup();
+  document.querySelectorAll('.js-link').forEach(function (el) { el.value = runLink(el.getAttribute('data-mode'), el.getAttribute('data-scen')); });
+}
+
+/* ---------- intro ---------- */
+function introHTML() {
+  var sc = SCEN[S.scen], cam = S.mode === 'camera';
+  var steps = '<li>When someone asks for a suture, find it on the <b>supply cart</b> and pick it up.</li>';
+  if (cam) {
+    steps += '<li>Click <b>Open onto field</b>. A camera above the back table spots the packet and suggests a count update on the board.</li>' +
+      '<li>Check each suggestion against what you opened, then <b>confirm</b>, <b>fix</b>, or <b>reject</b> it. Nothing is counted until you confirm it.</li>' +
+      '<li>You’re still responsible for the count. If the board is missing something, use <b>Add manually</b>.</li>';
+  } else {
+    steps += '<li>Click <b>Open onto field</b> to hand it to the team.</li>' +
+      '<li>Add its needles to the <b>whiteboard</b> with the +1 or +2 buttons, the way you’d write on the board today.</li>';
+  }
+  steps += '<li>When the scrub nurse calls out a count, click <b>Start count check</b>.</li>';
+  var legend = cam ? '<div class="legend" aria-label="What the boxes in the camera view mean"><span><i class="lg g"></i>Green box: counted</span><span><i class="lg a"></i>Amber box: needs you</span><span><i class="lg"></i>No box: not on the board</span></div>' : '';
+  return '<div class="screen"><div class="card">' +
+    '<p class="eyebrow">' + esc(sc.label) + ' · ' + esc(MODES[S.mode].label) + '</p>' +
+    '<h1>You’re the circulating nurse</h1>' +
+    '<p>The circulating nurse gets supplies for the surgical team and keeps track of everything that goes onto the <b>sterile field</b>, the area where the surgery happens.</p>' +
+    '<ol class="steps">' + steps + '</ol>' + legend +
+    '<div class="callout">Some sutures are <b>double-armed</b>, which means the packet holds <b>2 needles</b>. Every needle on the field has to be counted.</div>' +
+    '<p class="muted">Please think out loud as you go. We’re testing the design, not you, so there are no wrong answers.</p>' +
+    '<div class="go"><button class="primary big" data-act="start">Start</button></div>' +
+    '</div></div>';
+}
+
+/* ---------- case ---------- */
+function caseHTML() {
+  var board = S.mode === 'whiteboard' ? wbHTML(S, 'case') : boardHTML(S, 'case');
+  return '<div class="work"><div class="col">' + requestsHTML() + handHTML() + cartHTML() + '</div><div class="col">' + board + '</div></div>';
+}
+function requestsHTML() {
+  var sc = SCEN[S.scen], body = '';
+  if (S.count.requested) {
+    body = '<div class="rq count" data-scrub="' + S.count.scrub + '"><div class="rq-who">Scrub nurse</div>' +
+      '<p class="rq-text">“Let’s do a needle count. I count ' + S.count.scrub + ' needles.”</p>' +
+      '<p class="rq-hint">Click <b>Start count check</b> on the board.</p></div>';
+  } else {
+    var def = sc.steps[S.stepIndex], r = S.steps[S.stepIndex];
+    if (def && r && !r.done) {
+      body = '<div class="rq"><div class="rq-who">' + esc(def.who) + '</div><p class="rq-text">“' + esc(def.text) + '”</p><ul class="rq-items">' +
+        def.items.map(function (id) {
+          var got = r.got[id];
+          return '<li class="' + (got ? 'got' : '') + '"' + (got ? '' : ' data-need="' + id + '"') + '>' + (got ? icon('check', 16) : '<span class="box"></span>') + esc(ITEMS[id].name) + '</li>';
+        }).join('') + '</ul></div>';
+    } else {
+      body = '<p class="rq-wait">Waiting for the next request…</p>';
+    }
+  }
+  var done = [];
+  S.steps.forEach(function (r2, i) { if (r2 && r2.done) sc.steps[i].items.forEach(function (id) { done.push(ITEMS[id].name); }); });
+  var doneHTML = done.length ? '<div class="rq-done">' + done.slice(-4).map(function (n) { return '<span>' + icon('check', 14) + esc(n) + '</span>'; }).join('') + '</div>' : '';
+  return '<section class="panel" aria-live="polite"><h2 class="ph">Requests</h2>' + body + doneHTML + '</section>';
+}
+function handHTML() {
+  if (!S.hand) {
+    return '<section class="panel"><h2 class="ph">In your hand</h2><p class="hand-empty">Nothing yet. Pick a packet from the cart.</p></section>';
+  }
+  return '<section class="panel"><h2 class="ph">In your hand<button class="ghost" data-act="putback">Put back</button></h2><div class="hand-row"><div class="pk big">' + packetInner(S.hand.itemId, true) + '</div></div>' +
+    '<div class="hand-actions"><button class="primary" data-act="open">Open onto field</button></div></section>';
+}
+function cartHTML() {
+  return '<section class="panel"><h2 class="ph">Supply cart <span>Click a packet to pick it up</span></h2><div class="cart">' +
+    CART.map(function (id) {
+      return '<button class="pk' + (S.hand && S.hand.itemId === id ? ' inhand' : '') + '" data-act="pick" data-item="' + id + '" aria-label="Pick up ' + esc(ITEMS[id].name) + '">' + packetInner(id) + '</button>';
+    }).join('') + '</div></section>';
+}
+function sourceLabel(e) {
+  if (e.source === 'manual') return e.fromFeed ? 'Added from camera view' : 'Added manually';
+  if (e.identified) return 'Camera, identified by nurse';
+  return e.fixed ? 'Camera, fixed' : 'Camera, confirmed';
+}
+function rowHTML(e, ctx, d, opts) {
+  opts = opts || {};
+  var age = 999;
+  if (ctx === 'case') age = (now() - (e.confirmedAt || e.createdAt)) / 1000;
+  var isNew = age < 60;
+  var since = ctx === 'handoff' && toMin(e.simTime) > toMin(d.lastMatch);
+  var tag = opts.editable ? 'button' : 'div';
+  var attrs = opts.editable ? ' type="button" data-act="editrow" data-id="' + e.id + '"' + (opts.from ? ' data-from="' + opts.from + '"' : '') + ' title="Edit or remove this entry"' : '';
+  return '<' + tag + attrs + ' class="row' + (opts.editable ? ' rowbtn' : '') + (isNew ? ' new' : '') + (since ? ' since' : '') + '"' + (isNew ? ' style="animation-delay:-' + age.toFixed(1) + 's"' : '') + '>' +
+    '<span class="r-time">' + esc(e.simTime) + '</span>' +
+    '<span class="r-name">' + esc(e.name) + (isNew ? '<span class="newchip" style="animation-delay:-' + age.toFixed(1) + 's">New</span>' : '') + (e.edited ? ' <span class="r-src">(edited)</span>' : '') + '</span>' +
+    '<span class="r-src">' + sourceLabel(e) + '</span><span class="r-n">×' + e.needles + '</span></' + tag + '>';
+}
+function pendHTML(e, ctx) {
+  var live = ctx === 'case';
+  var age = live ? (now() - e.createdAt) / 1000 : 0;
+  var wait = live ? '<span class="w js-wait" data-since="' + e.createdAt + '">waiting ' + mmss(age) + '</span>' : '<span class="w">waiting since ' + esc(e.simTime) + '</span>';
+  var open = '<div class="pend' + (age >= 20 ? ' late' : '') + '" data-pending="' + e.id + '"' + (live ? ' data-created="' + e.createdAt + '"' : '') + '><div class="pend-top"><div class="snap">' + snapSVG(e) + '</div>';
+  if (e.unreadable) {
+    return open + '<div class="pend-text"><span class="pend-tag">' + icon('help', 14) + 'New packet, label not readable ' + wait + '</span><b>What was opened?</b>' +
+      '<span>The camera sees a new packet on the table but can’t read its label.</span></div><span class="pend-n">+?</span></div>' +
+      '<div class="pend-actions two"><button class="go" data-act="fix" data-id="' + e.id + '">' + icon('edit') + 'Identify it</button>' +
+      '<button data-act="reject" data-id="' + e.id + '">' + icon('x') + 'Not a suture</button></div></div>';
+  }
+  return open + '<div class="pend-text"><span class="pend-tag">' + icon('camera', 14) + 'Confirm this update ' + wait + '</span><b>' + esc(e.name) + '</b>' +
+    '<span>Camera read ' + needlesWord(e.needles) + '</span>' + confHTML(e) + '</div>' +
+    '<span class="pend-n">+' + e.needles + '</span></div>' +
+    '<div class="pend-actions"><button class="go" data-act="confirm" data-id="' + e.id + '">' + icon('check') + 'Confirm +' + e.needles + '</button>' +
+    '<button data-act="fix" data-id="' + e.id + '">' + icon('edit') + 'Fix</button>' +
+    '<button data-act="reject" data-id="' + e.id + '">' + icon('x') + 'Reject</button></div></div>';
+}
+function pendNoteHTML(d, ctx) {
+  var pl = pendingList(d);
+  if (!pl.length) return '';
+  var known = pendingSum(d), unk = pendingUnknown(d), parts = [];
+  if (known) parts.push('+' + known + ' to confirm');
+  if (unk) parts.push(unk + ' to identify');
+  var wait = '';
+  if (ctx === 'case') {
+    var oldest = Math.min.apply(null, pl.map(function (e) { return e.createdAt; }));
+    wait = ' · <span class="js-wait" data-since="' + oldest + '">waiting ' + mmss((now() - oldest) / 1000) + '</span>';
+  }
+  return '<p class="pend-note">' + icon('alert') + '<span>' + parts.join(' · ') + wait + '</span></p>';
+}
+function boardHTML(d, ctx) {
+  var conf = confirmedSum(d), plist = pendingList(d);
+  var rows = d.entries.filter(function (e) { return e.status === 'confirmed'; }).sort(function (a, b) { return b.order - a.order; });
+  var head = '<div class="b-head"><span class="b-room">' + esc(d.room) + ' · Count board</span>' +
+    '<span>' + icon('clock', 16) + '<span class="js-clock">' + clockText() + '</span></span>' +
+    '<span>' + icon('check', 16) + 'Last matching count ' + esc(d.lastMatch) + (ctx === 'case' && S.lastMatchNote ? ' (' + esc(S.lastMatchNote) + ')' : '') + '</span>' +
+    '<span class="b-cam"><i></i>Camera on</span></div>';
+  var tools = ctx === 'case'
+    ? '<div class="b-tools"><button data-act="add">' + icon('plus') + 'Add manually</button><button data-act="summary">' + icon('swap') + 'Hand off count</button><button data-act="count">' + icon('list') + 'Start count check</button></div>'
+    : '';
+  var left = '<div><div class="big-label">Needles expected on the field</div>' +
+    '<div class="big-num" data-expected="' + (d.initial + conf) + '">' + (d.initial + conf) + '</div>' +
+    '<div class="big-sub">' + d.initial + ' initial + ' + conf + ' added</div>' +
+    pendNoteHTML(d, ctx) + feedHTML(d, ctx === 'case') +
+    '<div class="mini">Sponges ' + d.sponges + ' · Instruments ' + d.instruments + '</div></div>';
+  var note = '';
+  if (ctx === 'handoff') {
+    var sinceItems = d.entries.filter(function (e) { return (e.status === 'confirmed' || e.status === 'pending') && toMin(e.simTime) > toMin(d.lastMatch); });
+    var sinceN = sinceItems.reduce(function (a, e) { return a + (e.needles || 0); }, 0);
+    note = '<div class="handoff-note">' + icon('swap') + '<span><b>Handoff from ' + esc(d.from) + '.</b> Since the last matching count (' + esc(d.lastMatch) + '): ' +
+      sinceItems.length + ' ' + plural(sinceItems.length, 'item', 'items') + ', +' + sinceN + ' ' + plural(sinceN, 'needle', 'needles') +
+      (plist.length ? ', ' + plist.length + ' waiting for confirmation' : '') + '. Marked with a blue edge below.</span></div>';
+  }
+  var right = '<div><p class="log-title">Added this case, newest first</p>' + note +
+    plist.map(function (e) { return pendHTML(e, ctx); }).join('') +
+    (rows.length ? rows.map(function (e) { return rowHTML(e, ctx, d, { editable: ctx === 'case' }); }).join('') : (plist.length ? '' : '<p class="log-empty">Nothing added yet.</p>')) +
+    (ctx === 'case' && rows.length ? '<p class="log-hint">Click an entry to fix or remove it.</p>' : '') + '</div>';
+  return '<section class="panel board dark" aria-label="Count board">' + head + tools + '<div class="b-main">' + left + right + '</div></section>';
+}
+function wbHTML(d, ctx) {
+  var tally = d.tallies.map(function (t) { return '+' + t.n; }).join(' ');
+  var head = '<div class="b-head"><span class="b-room">' + esc(d.room) + ' · Whiteboard</span><span>' + icon('clock', 16) + '<span class="js-clock">' + clockText() + '</span></span><span class="b-mode">Whiteboard</span></div>';
+  var bubble = ctx === 'handoff' ? '<div class="bubble"><b>' + esc(d.from) + ':</b> “Count’s on the board. I’m heading to break!”</div>' : '';
+  var surface = '<div class="wb-surface" aria-label="Whiteboard">' +
+    '<div class="wb-line"><span class="wb-label">Needles</span><span class="wb-val">' + d.initial + '</span><span class="wb-tally" data-tally="' + tally + '">' + esc(tally) + '</span></div>' +
+    '<div class="wb-line"><span class="wb-label">Sponges</span><span class="wb-val">' + d.sponges + '</span></div>' +
+    '<div class="wb-line"><span class="wb-label">Instruments</span><span class="wb-val">' + d.instruments + '</span></div></div>';
+  var tools = ctx === 'case'
+    ? '<div class="wb-tools"><span class="muted small">Write on the board:</span><button data-act="wb" data-n="1">+1 needle</button><button data-act="wb" data-n="2">+2 needles</button><button class="ghost" data-act="wberase">Erase last</button></div>' +
+      '<div class="b-actions"><button data-act="count">' + icon('list') + 'Start count check</button></div>'
+    : '';
+  return '<section class="panel board" aria-label="Whiteboard">' + head + bubble + surface + tools + '</section>';
+}
+
+/* ---------- other phases ---------- */
+function practiceDoneHTML() {
+  return '<div class="screen"><div class="card"><p class="eyebrow">Practice</p><h1>Practice complete</h1>' +
+    '<p>Nice work. Your facilitator will send the link for the next step.</p>' +
+    '<p class="muted small">Facilitator: paste the next link, or open the Facilitator menu at the bottom of the page.</p></div></div>';
+}
+function handoffIntroHTML() {
+  var b = S.mode === 'whiteboard' ? 'whiteboard' : 'board', h = handoffDef();
+  return '<div class="screen"><div class="card"><p class="eyebrow">Part 2 of 2</p><h1>Relief handoff</h1>' +
+    '<p>Now imagine you’re a different nurse. You’re taking over the count in <b>' + h.room + '</b> from <b>' + h.from + '</b>, who is leaving for a break.</p>' +
+    '<p>You’ll see ' + h.room + '’s ' + b + '. Look it over the way you normally would, then click <b>I’ve reviewed this</b>.</p>' +
+    '<p>After that, you’ll answer a few quick questions <b>without</b> looking at the ' + b + '.</p>' +
+    '<div class="go"><button class="primary big" data-act="handoffgo">Continue</button></div></div></div>';
+}
+function handoffHTML() {
+  var d = S.hd, b = S.mode === 'whiteboard' ? 'whiteboard' : 'board';
+  var left = '<section class="panel"><h2 class="ph">Relief handoff</h2>' +
+    '<p>You’re taking over the count in <b>' + esc(d.room) + '</b> from <b>' + esc(d.from) + '</b>.</p>' +
+    '<p>Review the ' + b + ' as you normally would. When you’re ready, click the button below.</p>' +
+    '<p class="muted small">Next, you’ll answer a few questions without the ' + b + '.</p>' +
+    '<div class="go" style="margin-top:12px"><button class="primary" data-act="reviewed">' + icon('check') + 'I’ve reviewed this</button></div></section>';
+  var board = S.mode === 'whiteboard' ? wbHTML(d, 'handoff') : boardHTML(d, 'handoff');
+  return '<div class="work"><div class="col">' + left + '</div><div class="col">' + board + '</div></div>';
+}
+function probeHTML() {
+  var qs = probeList().map(function (q, i) {
+    var inner;
+    if (q.type === 'number') {
+      inner = '<input type="number" min="0" max="99" inputmode="numeric" data-q="' + q.key + '" value="' + esc(S.probe[q.key] || '') + '" aria-label="' + esc(q.text) + '" style="max-width:140px">';
+    } else {
+      inner = '<div class="q-opts" role="radiogroup" aria-label="' + esc(q.text) + '">' + q.options.map(function (o) {
+        return '<label><input type="radio" name="q_' + q.key + '" value="' + o[0] + '" data-q="' + q.key + '"' + (S.probe[q.key] === o[0] ? ' checked' : '') + '>' + esc(o[1]) + '</label>';
+      }).join('') + '</div>';
+    }
+    return '<div class="q"><p class="q-t">' + (i + 1) + '. ' + esc(q.text) + '</p>' + inner + '<p class="err" id="err_' + q.key + '"></p></div>';
+  }).join('');
+  return '<div class="screen"><div class="card"><p class="eyebrow">Quick questions</p><h1>Answer from memory</h1>' +
+    '<p class="muted">Please don’t look back. Answer based on what you saw on ' + handoffDef().room + '’s ' + (S.mode === 'whiteboard' ? 'whiteboard' : 'board') + '. “Not sure” is a fine answer.</p>' +
+    qs + '<div class="go"><button class="primary big" data-act="probesubmit">Next</button></div></div></div>';
+}
+function scale7(key, n, text, lo, hi) {
+  var v = S.survey;
+  return '<div class="q"><p class="q-t">' + n + '. ' + text + '</p><div class="q-opts" role="radiogroup" aria-label="' + esc(text) + '">' +
+    [1, 2, 3, 4, 5, 6, 7].map(function (x) {
+      var lab = x === 1 ? '1 (' + lo + ')' : x === 7 ? '7 (' + hi + ')' : String(x);
+      return '<label><input type="radio" name="s_' + key + '" value="' + x + '" data-s="' + key + '"' + (v[key] === String(x) ? ' checked' : '') + '>' + lab + '</label>';
+    }).join('') + '</div><p class="err" id="serr_' + key + '"></p></div>';
+}
+function agreeGrid(items) {
+  var v = S.survey;
+  return '<div class="sus"><div class="sus-row sus-head"><span></span><span>Strongly disagree</span><span></span><span></span><span></span><span>Strongly agree</span></div>' +
+    items.map(function (it, i) {
+      var key = it[0];
+      return '<div class="sus-row" id="row_' + key + '"><span class="sus-t">' + (i + 1) + '. ' + esc(it[1]) + '</span>' +
+        [1, 2, 3, 4, 5].map(function (n) {
+          return '<label class="sus-c"><input type="radio" name="s_' + key + '" value="' + n + '" data-s="' + key + '"' + (v[key] === String(n) ? ' checked' : '') + ' aria-label="Statement ' + (i + 1) + ': ' + n + ' of 5"><span>' + n + '</span></label>';
+        }).join('') + '</div>';
+    }).join('') + '</div>';
+}
+function surveyKeys() {
+  var keys = ['seq', 'demand'];
+  for (var i = 1; i <= 10; i++) keys.push('sus' + i);
+  if (S.mode === 'camera') CAMQ.forEach(function (c) { keys.push(c[0]); });
+  return keys;
+}
+function surveyHTML() {
+  var cam = S.mode === 'camera';
+  var susItems = SUS.map(function (t, i) { return ['sus' + (i + 1), t]; });
+  return '<div class="screen"><div class="card wide"><p class="eyebrow">Almost done</p><h1>Your impressions of this version</h1>' +
+    '<p class="muted">Answer about the version you just used. Go with your first reaction.</p>' +
+    scale7('seq', 1, 'Overall, how difficult or easy was it to keep the count with this version?', 'very difficult', 'very easy') +
+    scale7('demand', 2, 'How mentally demanding was it to keep the count?', 'very low', 'very high') +
+    '<div class="q"><p class="q-t">3. For each statement, choose how much you agree. “System” means the ' + (cam ? 'count board and camera' : 'whiteboard process') + ' you just used.</p>' +
+    agreeGrid(susItems) + '<p class="err" id="serr_sus"></p></div>' +
+    (cam ? '<div class="q"><p class="q-t">4. And three statements about the camera.</p>' + agreeGrid(CAMQ) + '<p class="err" id="serr_cam"></p></div>' : '') +
+    '<div class="go"><button class="primary big" data-act="surveysubmit">Finish</button></div></div></div>';
+}
+function susScore() {
+  var sum = 0;
+  for (var i = 1; i <= 10; i++) {
+    var x = parseInt(S.survey['sus' + i], 10);
+    if (!x) return null;
+    sum += i % 2 === 1 ? x - 1 : 5 - x;
+  }
+  return sum * 2.5;
+}
+function submitSurvey() {
+  var missing = surveyKeys().filter(function (k) { return !S.survey[k]; });
+  document.querySelectorAll('.sus-row.missing').forEach(function (r) { r.classList.remove('missing'); });
+  ['seq', 'demand'].forEach(function (k) { $('serr_' + k).textContent = missing.indexOf(k) >= 0 ? 'Choose a number from 1 to 7.' : ''; });
+  var susMissing = missing.filter(function (k) { return k.indexOf('sus') === 0; });
+  var camMissing = missing.filter(function (k) { return CAMQ.some(function (c) { return c[0] === k; }); });
+  susMissing.concat(camMissing).forEach(function (k) { var r = $('row_' + k); if (r) r.classList.add('missing'); });
+  $('serr_sus').textContent = susMissing.length ? 'Answer every statement. ' + susMissing.length + ' ' + plural(susMissing.length, 'is', 'are') + ' still blank (highlighted).' : '';
+  if ($('serr_cam')) $('serr_cam').textContent = camMissing.length ? 'Answer every statement. ' + camMissing.length + ' ' + plural(camMissing.length, 'is', 'are') + ' still blank (highlighted).' : '';
+  if (missing.length) {
+    var k0 = missing[0];
+    var first = $('row_' + k0) || document.querySelector('[data-s="' + k0 + '"]');
+    if (first) first.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    return;
+  }
+  log('survey_submitted', { ease_1_to_7: S.survey.seq, mental_demand_1_to_7: S.survey.demand, sus_score: susScore() });
+  S.phase = 'results';
+  render();
+  window.scrollTo(0, 0);
+}
+
+/* ---------- metrics and results ---------- */
+function computeMetrics() {
+  var M = {}, sc = SCEN[S.scen];
+  var reqAt = S.count.requested ? S.count.requestAt : Infinity;
+  M.caseSeconds = S.t0 ? ((S.caseEnd || now()) - S.t0) / 1000 : 0;
+  M.truth = truthNeedles();
+  M.packets = S.packets.length;
+  M.openedNeedles = M.truth - S.initial;
+  M.wrongItems = S.log.filter(function (l) { return l.type === 'wrong_item_opened'; }).length;
+  M.requestMedian = median(S.steps.map(function (r) { return r && r.doneAt ? (r.doneAt - r.shownAt) / 1000 : null; }));
+  M.boardAtCount = S.count.boardAtRequest;
+  M.pendAtCount = S.count.pendingAtRequest;
+  M.discAtCount = S.count.requested ? S.count.scrub - S.count.boardAtRequest : null;
+  var intP = S.packets.filter(function (p) { return p.id === S.flags.intPacket; })[0];
+  if (S.mode === 'whiteboard') {
+    M.recorded = S.initial + tallySum(S);
+    M.pendingEnd = 0;
+    var daOpened = S.packets.filter(function (p) { return ITEMS[p.itemId].da; }).length;
+    var plus2 = S.tallies.filter(function (t) { return t.n === 2; }).length;
+    M.daAs2 = Math.min(daOpened, plus2) + ' of ' + daOpened;
+    var lat = [];
+    S.packets.forEach(function (p, i) { var t = S.tallies[i]; if (t) lat.push(Math.max(0, (t.at - p.openedAt) / 1000)); });
+    M.latency = median(lat);
+    M.intRecorded = !intP ? 'not reached' : (S.flags.intChecked ? (S.flags.intRecovered ? 'yes' : 'no') : 'unclear');
+  } else {
+    var R = reconcile();
+    M.recorded = S.initial + confirmedSum(S);
+    M.pendingEnd = pendingSum(S);
+    M.unrecorded = S.packets.filter(function (p) { return !R.linked[p.id]; }).map(function (p) { return ITEMS[p.itemId].name; });
+    M.extra = R.extra.length;
+    M.wrongQty = S.packets.filter(function (p) { var e = R.linked[p.id]; return e && e.needles !== p.n; }).length;
+    var lat2 = [];
+    S.packets.forEach(function (p) { var e = R.linked[p.id]; if (e) lat2.push(Math.max(0, ((e.confirmedAt || e.createdAt) - p.openedAt) / 1000)); });
+    M.latency = median(lat2);
+    if (intP) {
+      var ie = R.linked[intP.id];
+      var ieAt = ie ? (ie.confirmedAt || ie.createdAt) : null;
+      M.intRecorded = ie ? (ieAt <= reqAt ? 'yes' : 'only after the count was called') : 'no';
+      M.intReturn = ie && S.flags.intEndedAt ? Math.max(0, (ieAt - S.flags.intEndedAt) / 1000) : null;
+    } else {
+      M.intRecorded = 'not reached';
+    }
+    if (!sc.practice) {
+      var mp = S.packets.filter(function (p) { return p.kind === 'misread'; })[0];
+      var ms = S.entries.filter(function (e) { return e.misread; })[0];
+      if (!mp || !ms) M.misread = 'not reached';
+      else {
+        var ml = R.linked[mp.id], mok = ml && ml.needles === mp.n;
+        if (mok && ml === ms && ms.fixed) M.misread = 'caught at the suggestion';
+        else if (mok && ms.status === 'rejected') M.misread = 'caught at the suggestion (rejected, then added)';
+        else if (mok) M.misread = (ml.editedAt || ml.confirmedAt || ml.createdAt) <= reqAt ? 'confirmed wrong, corrected before the count' : 'confirmed wrong, corrected during the count check';
+        else if (ms.status === 'pending') M.misread = 'left pending';
+        else M.misread = 'not caught (wrong count stayed on the board)';
+      }
+      var xp = S.packets.filter(function (p) { return p.kind === 'miss'; })[0];
+      if (!xp) M.miss = 'not reached';
+      else {
+        var xl = R.linked[xp.id];
+        M.miss = !xl ? 'not caught' : ((xl.confirmedAt || xl.createdAt) <= reqAt ? 'caught before the count' : 'caught during the count check');
+        M.missVia = xl ? (xl.fromFeed ? 'camera view' : 'Add manually') : null;
+      }
+      var up = S.packets.filter(function (p) { return p.kind === 'unreadable'; })[0];
+      var us = S.entries.filter(function (e) { return e.wasUnreadable; })[0];
+      if (!up || !us) M.unread = 'not reached';
+      else if (us.status === 'pending') M.unread = 'left unidentified';
+      else if (us.status === 'confirmed') M.unread = us.itemId === us.trueItem ? 'identified correctly' : (us.needles === up.n ? 'identified as a different suture (same needle count)' : 'identified wrong (wrong needle count)');
+      else { var ul = R.linked[up.id]; M.unread = ul && ul.needles === up.n ? 'dismissed, then added correctly' : 'dismissed (not counted)'; }
+    }
+    var camE = S.entries.filter(function (e) { return e.source === 'camera'; });
+    M.confirmMedian = median(camE.filter(function (e) { return e.confirmedAt && !e.wasUnreadable; }).map(function (e) { return (e.confirmedAt - e.createdAt) / 1000; }));
+    var waits = camE.map(function (e) { return ((e.confirmedAt || e.rejectedAt || S.caseEnd || now()) - e.createdAt) / 1000; });
+    M.longestWait = waits.length ? Math.max.apply(null, waits) : null;
+    M.rejected = camE.filter(function (e) { return e.status === 'rejected'; }).length;
+    M.undos = S.log.filter(function (l) { return l.type === 'undo'; }).length;
+  }
+  M.boardMatchesField = M.recorded === M.truth;
+  var a = S.count.attempts;
+  if (S.mode === 'whiteboard') {
+    M.countFirst = !a.length ? 'not done' : (a[0].saysMatch ? 'said it matched' : 'said it didn’t match') + (a[0].saysMatch === a[0].actualMatch ? ' (correct)' : ' (incorrect)');
+    M.countResolved = S.count.skipped ? 'skipped' : (S.count.saidMatch ? (S.count.resolved ? 'yes' : 'said it matched, but it didn’t') : 'no');
+  } else {
+    M.countFirst = !a.length ? 'not done' : (a[0].match ? 'matched' : 'mismatch (board ' + a[0].expected + ', counted ' + a[0].counted + ')');
+    M.countResolved = S.count.resolved ? 'yes' : (S.count.skipped ? 'skipped' : 'no');
+  }
+  M.countAttempts = a.length;
+  M.countTime = S.count.requested && S.caseEnd ? (S.caseEnd - S.count.requestAt) / 1000 : null;
+  if (!sc.practice) {
+    M.reviewSeconds = S.handoffReviewed ? (S.handoffReviewed - S.handoffStart) / 1000 : null;
+    M.probe = probeList().map(function (q) {
+      var ans = S.probe[q.key];
+      var label = ans === undefined || ans === '' ? 'no answer' : (q.options ? (q.options.filter(function (o) { return o[0] === ans; })[0] || [ans, ans])[1] : ans);
+      return { key: q.key, text: q.text, raw: ans, answer: label, correct: q.truth ? String(ans) === q.truth : null };
+    });
+    M.probeScore = M.probe.filter(function (p) { return p.correct === true; }).length;
+    M.seq = S.survey.seq || null;
+    M.demand = S.survey.demand || null;
+    M.sus = susScore();
+    M.susItems = SUS.map(function (t, i) { return S.survey['sus' + (i + 1)] || '-'; });
+    M.trust = S.survey.trust || null;
+    M.aware = S.survey.aware || null;
+    M.comfort = S.survey.comfort || null;
+  }
+  return M;
+}
+function sheetRow(M) {
+  var cam = S.mode === 'camera';
+  function pv(i) { return M.probe ? (M.probe[i].correct ? 1 : 0) : ''; }
+  var cols = [
+    ['participant', S.pid], ['version', MODES[S.mode].short], ['scenario', SCEN[S.scen].label], ['run_id', S.runId],
+    ['case_seconds', Math.round(M.caseSeconds)], ['needles_actual', M.truth],
+    ['board_when_count_called', M.boardAtCount], ['pending_when_count_called', M.pendAtCount], ['discrepancy_when_count_called', M.discAtCount],
+    ['board_at_end', M.recorded],
+    ['packets_never_recorded', cam ? M.unrecorded.length : ''], ['wrong_count_entries', cam ? M.wrongQty : ''], ['extra_entries', cam ? M.extra : ''],
+    ['double_armed_written_as_2', cam ? '' : M.daAs2],
+    ['interrupted_packet_recorded', M.intRecorded], ['median_open_to_record_s', r1(M.latency)],
+    ['misread', M.misread], ['missed', M.miss], ['unreadable', M.unread],
+    ['median_confirm_s', cam ? r1(M.confirmMedian) : ''], ['longest_wait_s', cam ? r1(M.longestWait) : ''],
+    ['count_first_check', M.countFirst], ['count_resolved', M.countResolved],
+    ['handoff_review_s', r1(M.reviewSeconds)], ['sa_score_of_4', M.probe ? M.probeScore : ''],
+    ['sa_q1', pv(0)], ['sa_q2', pv(1)], ['sa_q3', pv(2)], ['sa_q4', pv(3)], ['sa_confidence_1to5', S.probe.conf],
+    ['ease_1to7', M.seq], ['mental_demand_1to7', M.demand], ['sus_0to100', M.sus],
+    ['trust_1to5', M.trust], ['awareness_1to5', M.aware], ['comfort_1to5', M.comfort]
+  ];
+  function clean(v) { return v === null || v === undefined ? '' : String(v).replace(/[\t\n]/g, ' '); }
+  return cols.map(function (c) { return c[0]; }).join('\t') + '\n' + cols.map(function (c) { return clean(c[1]); }).join('\t');
+}
+function kv(label, value, cls) { return '<div class="kv"><span>' + esc(label) + '</span><b' + (cls ? ' class="' + cls + '"' : '') + '>' + esc(value) + '</b></div>'; }
+function discText(M) {
+  if (M.discAtCount === null) return 'count not reached';
+  if (M.discAtCount === 0) return 'none (board ' + M.boardAtCount + ', field ' + S.count.scrub + ')';
+  return 'board ' + M.boardAtCount + ', field ' + S.count.scrub + ' (' + (M.discAtCount > 0 ? 'short by ' + M.discAtCount : 'over by ' + (-M.discAtCount)) + ')' + (M.pendAtCount ? ', +' + M.pendAtCount + ' pending' : '');
+}
+function resultsHTML() {
+  var M = computeMetrics(), cam = S.mode === 'camera', scored = !SCEN[S.scen].practice;
+  var sec1 = '<div class="res-sec"><h3>Run</h3>' +
+    kv('Participant', S.pid || '(none)') + kv('Version', MODES[S.mode].label) + kv('Scenario', SCEN[S.scen].label) +
+    kv('Run ID', S.runId) + kv('Case time', mmss(M.caseSeconds)) + kv('Median time per request', secStr(M.requestMedian)) + '</div>';
+  var sec2 = '<div class="res-sec"><h3>Recording accuracy</h3>' +
+    kv('Needles opened onto the field', M.openedNeedles + ' (' + M.packets + ' packets)') +
+    kv('Discrepancy when the count was called', discText(M), M.discAtCount === 0 ? 'good' : (M.discAtCount === null ? '' : 'badv')) +
+    kv('Board at the end vs. actual field', M.recorded + ' vs. ' + M.truth + (M.pendingEnd ? ' (+' + M.pendingEnd + ' pending)' : ''), M.boardMatchesField ? 'good' : 'badv') +
+    (cam ? kv('Packets never recorded', M.unrecorded.length ? M.unrecorded.join(', ') : 'none', M.unrecorded.length ? 'badv' : 'good') +
+      kv('Packets on the board with the wrong needle count', String(M.wrongQty), M.wrongQty ? 'badv' : 'good') +
+      kv('Extra or duplicate entries', String(M.extra), M.extra ? 'badv' : 'good')
+      : kv('Double-armed sutures written as +2', M.daAs2)) +
+    kv('Wrong packets opened', String(M.wrongItems)) +
+    kv('Median time from opening to recorded', secStr(M.latency)) +
+    kv('Packet opened right before the interruption recorded', M.intRecorded, M.intRecorded === 'yes' ? 'good' : (M.intRecorded === 'not reached' ? '' : 'badv')) +
+    (cam && M.intReturn != null ? kv('Time from returning to confirming it', secStr(M.intReturn)) : '') +
+    '</div>';
+  var sec3 = '';
+  if (cam) {
+    sec3 = '<div class="res-sec"><h3>Working with the camera</h3>' +
+      (scored ? kv('Wrong suggestion (double-armed read as 1 needle)', M.misread, M.misread.indexOf('caught at') === 0 ? 'good' : 'badv') +
+        kv('Silent miss (no suggestion appeared)', M.miss + (M.missVia ? ', via ' + M.missVia : ''), M.miss === 'caught before the count' ? 'good' : 'badv') +
+        kv('Unreadable label (camera asked what it was)', M.unread, M.unread === 'identified correctly' ? 'good' : 'badv') : '') +
+      kv('Median time to confirm a suggestion', secStr(M.confirmMedian)) +
+      kv('Longest a suggestion waited', secStr(M.longestWait)) +
+      kv('Suggestions rejected', String(M.rejected)) + kv('Undo used', String(M.undos)) + '</div>';
+  }
+  var sec4 = '<div class="res-sec"><h3>Count check</h3>' +
+    kv('First check', M.countFirst) + kv('Checks attempted', String(M.countAttempts)) +
+    kv('Resolved', M.countResolved, M.countResolved === 'yes' ? 'good' : 'badv') +
+    kv('Time from count called to finished', secStr(M.countTime)) + '</div>';
+  var sec5 = '';
+  if (scored) {
+    sec5 = '<div class="res-sec"><h3>Handoff and awareness questions</h3>' +
+      kv('Time spent reviewing the handoff', secStr(M.reviewSeconds)) +
+      M.probe.map(function (p, i) {
+        var mark = p.correct === null ? '' : (p.correct ? ' ✓' : ' ✗');
+        return kv('Q' + (i + 1) + ' answer', p.answer + mark, p.correct === null ? '' : (p.correct ? 'good' : 'badv'));
+      }).join('') +
+      kv('Score', M.probeScore + ' of 4') + '</div>' +
+      '<div class="res-sec"><h3>Ratings</h3>' +
+      kv('Ease (1 very difficult, 7 very easy)', M.seq ? M.seq + ' of 7' : 'not answered') +
+      kv('Mental demand (1 very low, 7 very high)', M.demand ? M.demand + ' of 7' : 'not answered') +
+      kv('SUS score (0 to 100, about 68 is average)', M.sus === null ? 'not answered' : String(M.sus)) +
+      kv('SUS answers, statements 1 to 10', M.susItems.join(' ')) +
+      (cam ? kv('Could rely on the suggestions (1 to 5)', M.trust || 'not answered') +
+        kv('Knew what was and wasn’t counted (1 to 5)', M.aware || 'not answered') +
+        kv('Comfortable with the camera in my OR (1 to 5)', M.comfort || 'not answered') : '') + '</div>';
+  }
+  var logRows = S.log.map(function (l) {
+    var details = Object.keys(l).filter(function (k) { return k !== 't' && k !== 'type'; }).map(function (k) { return k + '=' + l[k]; }).join(', ');
+    return '<tr><td>' + l.t + '</td><td>' + esc(l.type) + '</td><td>' + esc(details) + '</td></tr>';
+  }).join('');
+  return '<div class="screen"><div class="card wide"><p class="eyebrow">Run complete</p><h1>Thanks, that’s the end of this run</h1>' +
+    '<p>Please click <b>Copy results</b> and paste them into the meeting chat. That’s all for this part.</p>' +
+    '<div class="res-actions"><button class="primary" data-act="copyres">' + icon('copy', 16) + ' Copy results</button></div>' +
+    '<details class="facd"><summary>Details for the facilitator</summary>' +
+    '<div class="res-actions"><button data-act="copyrow">' + icon('copy', 16) + ' Copy spreadsheet row</button><button data-act="newrun">Back to session setup</button></div>' +
+    '<div class="res-grid">' + sec1 + sec2 + sec3 + sec4 + sec5 + '</div>' +
+    '<details><summary>Event log (' + S.log.length + ' events, seconds from start)</summary><table class="logtable"><thead><tr><th>Time</th><th>Event</th><th>Details</th></tr></thead><tbody>' + logRows + '</tbody></table></details>' +
+    '</details></div></div>';
+}
+function resultsText() {
+  var M = computeMetrics(), cam = S.mode === 'camera', L = [];
+  L.push('NEEDLE COUNT PROTOTYPE RESULTS');
+  L.push('Participant: ' + (S.pid || '(none)') + ' | Version: ' + MODES[S.mode].label + ' | Scenario: ' + SCEN[S.scen].label + ' | Run: ' + S.runId + ' | ' + S.started.toLocaleString());
+  L.push('Case time: ' + mmss(M.caseSeconds) + ' | Median time per request: ' + secStr(M.requestMedian));
+  L.push('Needles opened: ' + M.openedNeedles + ' in ' + M.packets + ' packets | Discrepancy when the count was called: ' + discText(M));
+  L.push('Board at end: ' + M.recorded + (M.pendingEnd ? ' (+' + M.pendingEnd + ' pending)' : '') + ' vs actual ' + M.truth + (M.boardMatchesField ? ' (match)' : ' (MISMATCH)'));
+  if (cam) L.push('Never recorded: ' + (M.unrecorded.length ? M.unrecorded.join('; ') : 'none') + ' | Wrong needle count on board: ' + M.wrongQty + ' | Extra entries: ' + M.extra);
+  else L.push('Double-armed written as +2: ' + M.daAs2);
+  L.push('Wrong packets opened: ' + M.wrongItems + ' | Median opening-to-recorded: ' + secStr(M.latency) + ' | Interrupted packet recorded: ' + M.intRecorded + (cam && M.intReturn != null ? ' (' + secStr(M.intReturn) + ' after returning)' : ''));
+  if (cam) {
+    if (M.misread) L.push('Wrong suggestion: ' + M.misread + ' | Silent miss: ' + M.miss + (M.missVia ? ', via ' + M.missVia : '') + ' | Unreadable label: ' + M.unread);
+    L.push('Median time to confirm: ' + secStr(M.confirmMedian) + ' | Longest wait: ' + secStr(M.longestWait) + ' | Rejected: ' + M.rejected + ' | Undo used: ' + M.undos);
+  }
+  L.push('Count check: first ' + M.countFirst + ' | attempts ' + M.countAttempts + ' | resolved ' + M.countResolved + ' | time ' + secStr(M.countTime));
+  if (M.probe) {
+    L.push('Handoff review time: ' + secStr(M.reviewSeconds) + ' | Awareness score: ' + M.probeScore + ' of 4');
+    M.probe.forEach(function (p, i) { L.push('Q' + (i + 1) + ': ' + p.answer + (p.correct === null ? '' : (p.correct ? ' (correct)' : ' (incorrect)'))); });
+    L.push('Ease: ' + (M.seq || '-') + ' of 7 | Mental demand: ' + (M.demand || '-') + ' of 7 | SUS: ' + (M.sus === null ? '-' : M.sus) + ' | SUS answers 1-10: ' + M.susItems.join(' '));
+    if (cam) L.push('Camera statements (1-5): rely ' + (M.trust || '-') + ' | knew what was counted ' + (M.aware || '-') + ' | comfortable in my OR ' + (M.comfort || '-'));
+  }
+  L.push('');
+  L.push('SPREADSHEET ROW (tab-separated: header line, then values)');
+  L.push(sheetRow(M));
+  L.push('');
+  L.push('EVENT LOG (seconds from start)');
+  S.log.forEach(function (l) {
+    var details = Object.keys(l).filter(function (k) { return k !== 't' && k !== 'type'; }).map(function (k) { return k + '=' + l[k]; }).join(', ');
+    L.push(l.t + '\t' + l.type + (details ? '\t' + details : ''));
+  });
+  return L.join('\n');
+}
+
+/* ---------- modals ---------- */
+function itemPickList(act, highlight) {
+  return '<div class="pick">' + CART.map(function (id) {
+    var it = ITEMS[id];
+    return '<button data-act="' + act + '" data-item="' + id + '"' + (highlight === id ? ' style="border-color:var(--accent)"' : '') + '><span>' + esc(it.name) + '</span><b>×' + it.n + ' ' + plural(it.n, 'needle', 'needles') + '</b></button>';
+  }).join('') + '</div>';
+}
+function modalHTML() {
+  var m = S.modal, d = activeData(), body = '', wide = false;
+  if (m.type === 'add') {
+    body = '<h2 id="dlgT">' + (m.pid != null ? 'What is this packet?' : 'Add manually') + '</h2><p class="muted">Choose what was opened. The needle count comes from the suture list.</p>' + itemPickList('addpick') +
+      '<div class="dlg-actions"><button class="ghost" data-act="' + (m.from === 'count' ? 'countagain' : 'close') + '">Cancel</button></div>';
+  } else if (m.type === 'fix') {
+    var e = findEntry(d, m.id);
+    if (!e) { S.modal = null; return ''; }
+    body = e.unreadable
+      ? '<h2 id="dlgT">What was opened?</h2><p>The camera couldn’t read this label. Choose the suture that was opened.</p>' + itemPickList('fixpick')
+      : '<h2 id="dlgT">Fix this suggestion</h2><p>The camera read <b>' + esc(e.name) + '</b> with <b>' + needlesWord(e.needles) + '</b>. Choose what was actually opened.</p>' + itemPickList('fixpick', e.misread ? null : e.itemId);
+    body += '<div class="dlg-actions"><button class="ghost" data-act="close">Cancel</button></div>';
+  } else if (m.type === 'edit') {
+    var ed = findEntry(S, m.id);
+    if (!ed) { S.modal = null; return ''; }
+    body = '<h2 id="dlgT">Edit entry</h2><p>' + esc(ed.simTime) + ' · <b>' + esc(ed.name) + '</b> · ×' + ed.needles + ' (' + esc(sourceLabel(ed)) + ')</p>' +
+      '<p class="muted">If this entry is wrong, choose what was actually opened, or remove it.</p>' + itemPickList('editpick', ed.misread && !ed.fixed && !ed.edited ? null : ed.itemId) +
+      '<div class="dlg-actions"><button class="ghost" data-act="' + (m.from === 'count' ? 'countagain' : 'close') + '">Cancel</button><button data-act="removeentry">' + icon('x') + 'Remove entry</button></div>';
+  } else if (m.type === 'summary') {
+    var plist = pendingList(S);
+    var since = S.entries.filter(function (x) { return x.status === 'confirmed' && (x.confirmedAt || x.createdAt) >= S.lastMatchAt; }).sort(function (a, b) { return b.order - a.order; });
+    var sinceN = since.reduce(function (a, x) { return a + x.needles; }, 0);
+    body = '<h2 id="dlgT">Handoff summary</h2><p>Needles expected now: <b>' + (S.initial + confirmedSum(S)) + '</b>' + (plist.length ? ' · <b>' + plist.length + ' waiting for confirmation</b>' : '') + '</p>' +
+      '<p class="muted">Since the last matching count (' + esc(S.lastMatch) + '): ' + since.length + ' ' + plural(since.length, 'item', 'items') + ', +' + sinceN + ' ' + plural(sinceN, 'needle', 'needles') + '.</p>' +
+      (since.length ? '<div class="mini-log">' + since.map(function (x) { return rowHTML(x, 'summary', S); }).join('') + '</div>' : '') +
+      '<div class="dlg-actions"><button class="primary" data-act="close" data-autofocus>I’ve reviewed this</button></div>';
+  } else if (m.type === 'count') {
+    body = countModalHTML(m);
+    wide = S.mode === 'camera' && m.result && !m.result.match;
+  } else if (m.type === 'fac') {
+    body = '<h2 id="dlgT">Facilitator</h2><p class="muted small">' + esc(S.pid || 'No participant ID') + ' · ' + esc(MODES[S.mode].label) + ' · ' + esc(SCEN[S.scen].label) + ' · phase: ' + esc(S.phase) + '</p>' +
+      '<div class="pick">' +
+      (S.phase === 'case' ? '<button data-act="facskipcount">Skip ahead to the count check</button><button data-act="facend">End the case now</button>' : '') +
+      (['case', 'handoffIntro', 'handoff', 'probe', 'survey'].indexOf(S.phase) >= 0 ? '<button data-act="facresults">Go to results now</button>' : '') +
+      '<button data-act="facrestart">Restart this run from the start</button><button data-act="facsetup">Back to session setup</button></div>' +
+      '<div class="dlg-actions"><button class="ghost" data-act="close">Close</button></div>';
+  }
+  return '<div class="ov"><div class="dlg' + (wide ? ' wide' : '') + '" role="dialog" aria-modal="true" aria-labelledby="dlgT">' + body + '</div></div>';
+}
+function countModalHTML(m) {
+  if (!S.count.requested) {
+    return '<h2 id="dlgT">Count check</h2><p>The scrub nurse hasn’t called out a count yet. Wait for their count.</p><div class="dlg-actions"><button class="primary" data-act="close" data-autofocus>OK</button></div>';
+  }
+  if (S.mode === 'whiteboard') {
+    if (m.result === 'no') {
+      return '<h2 id="dlgT">Count check</h2><div class="result bad">' + icon('alert') + '<span>Fix the whiteboard so it matches what’s on the field, then check again.</span></div>' +
+        '<div class="dlg-actions"><button class="ghost" data-act="countskip">Continue without resolving</button><button class="primary" data-act="close" data-autofocus>Back to the whiteboard</button></div>';
+    }
+    return '<h2 id="dlgT">Count check</h2><p>The scrub nurse counted <b>' + S.count.scrub + '</b> needles. Does the whiteboard match?</p>' +
+      '<div class="dlg-actions"><button class="ghost" data-act="close">Cancel</button><button data-act="countno">It doesn’t match</button><button class="primary" data-act="countyes">It matches</button></div>';
+  }
+  var plist = pendingList(S);
+  if (!m.result) {
+    return '<h2 id="dlgT">Count check</h2><p class="muted">Enter the number of needles the scrub nurse counted. The board compares it with what it expects.</p>' +
+      (plist.length ? '<p class="pend-note">' + icon('alert') + '<span>' + plist.length + ' ' + plural(plist.length, 'suggestion is', 'suggestions are') + ' still waiting. Deal with ' + plural(plist.length, 'it', 'them') + ' first so the board is up to date.</span></p>' : '') +
+      '<label class="fld">Needles the scrub counted<input type="number" id="countIn" min="0" max="99" inputmode="numeric" data-autofocus></label>' +
+      '<p class="err">' + esc(m.err || '') + '</p>' +
+      '<div class="dlg-actions"><button class="ghost" data-act="close">' + (plist.length ? 'Back to the board' : 'Cancel') + '</button><button class="primary" data-act="countgo">Check count</button></div>';
+  }
+  var r = m.result;
+  if (r.match) {
+    return '<h2 id="dlgT">Count check</h2><div class="result ok">' + icon('check') + '<span>Count matches: ' + r.counted + ' needles. Recorded at ' + esc(S.lastMatch) + '.</span></div>' +
+      '<div class="dlg-actions"><button class="primary" data-act="countdone" data-autofocus>Done</button></div>';
+  }
+  var diff = r.counted - r.expected;
+  var since = S.entries.filter(function (x) { return x.status === 'confirmed' && (x.confirmedAt || x.createdAt) >= S.lastMatchAt; }).sort(function (a, b) { return b.order - a.order; });
+  return '<h2 id="dlgT">Count check</h2><div class="result bad">' + icon('alert') + '<span>Doesn’t match. The scrub counted ' + r.counted + ', but the board expects ' + r.expected + ' (' + Math.abs(diff) + ' ' + (diff > 0 ? 'more' : 'fewer') + ' than the board).</span></div>' +
+    '<p>' + (diff > 0 ? 'Something may have been opened without being recorded, or recorded with too few needles.' : 'Something may have been recorded twice, or with too many needles.') + ' Compare the entries since the last matching count (' + esc(S.lastMatch) + ') with the camera view.</p>' +
+    '<div class="cmp"><div>' + (since.length ? '<div class="mini-log">' + since.map(function (x) { return rowHTML(x, 'summary', S, { editable: true, from: 'count' }); }).join('') + '</div><p class="log-hint">Click an entry to fix or remove it.</p>' : '<p class="muted">Nothing recorded since then.</p>') + '</div>' +
+    '<div>' + feedHTML(S, true) + '<p class="log-hint">Click a packet with no box to add it.</p></div></div>' +
+    (plist.length ? '<p class="pend-note">' + icon('alert') + '<span>' + plist.length + ' ' + plural(plist.length, 'suggestion is', 'suggestions are') + ' still waiting on the board.</span></p>' : '') +
+    '<div class="dlg-actions"><button class="ghost" data-act="countskip">Continue without resolving</button>' +
+    (plist.length ? '<button data-act="close">Back to the board</button>' : '') +
+    '<button data-act="add">' + icon('plus') + 'Add manually</button><button class="primary" data-act="countagain" data-autofocus>Check again</button></div>';
+}
+function interruptHTML() {
+  var I = S.interrupt, c = I.cfg, body;
+  if (I.stage === 'walk') {
+    body = '<p class="muted">' + esc(c.walk) + '…</p><div class="bar"><i></i></div>';
+  } else if (I.stage === 'find') {
+    body = '<p class="q-t">' + esc(c.prompt) + '</p><div class="opts">' + c.options.map(function (o) {
+      return '<button data-act="intopt" data-opt="' + esc(o) + '">' + esc(o) + '</button>';
+    }).join('') + '</div>';
+  } else {
+    body = '<div class="result ok">' + icon('check') + '<span>Got it.</span></div><div class="dlg-actions"><button class="primary" data-act="intdone" data-autofocus>' + esc(c.done) + '</button></div>';
+  }
+  return '<div class="ov int"><div class="dlg int-dlg" role="alertdialog" aria-modal="true" aria-labelledby="intT"><p class="int-who">' + esc(c.who) + '</p><p class="int-text" id="intT">“' + esc(c.text) + '”</p>' + body + '</div></div>';
+}
+
+/* ---------- case logic ---------- */
+function startCase() {
+  S.phase = 'case';
+  S.t0 = now();
+  S.lastMatchAt = S.t0;
+  log('case_start', { version: S.mode, scenario: S.scen, participant: S.pid });
+  startClock();
+  render();
+  var tk = S.token;
+  setTimeout(function () { if (S && S.token === tk && S.phase === 'case') showStep(0); }, 1200);
+}
+function showStep(i) {
+  var sc = SCEN[S.scen];
+  if (S.count.requested) return;
+  if (i >= sc.steps.length) { requestCount(); return; }
+  S.stepIndex = i;
+  S.steps[i] = { shownAt: now(), got: {}, done: false };
+  log('request', { step: i + 1, items: sc.steps[i].items.join('+') });
+  renderMain();
+}
+function requestCount() {
+  if (S.count.requested) return;
+  S.stepIndex = SCEN[S.scen].steps.length;
+  S.count.requested = true;
+  S.count.requestAt = now();
+  S.count.scrub = truthNeedles();
+  S.count.boardAtRequest = boardTotal();
+  S.count.pendingAtRequest = S.mode === 'camera' ? pendingSum(S) : 0;
+  checkIntRecovery(null);
+  log('count_request', { scrub_count: S.count.scrub, board_total: S.count.boardAtRequest, pending: S.count.pendingAtRequest });
+  renderMain();
+}
+function pick(itemId) {
+  if (S.phase !== 'case') return;
+  if (S.hand) {
+    if (S.hand.itemId === itemId) return;
+    putBack(true);
+  }
+  S.hand = { itemId: itemId, pickedAt: now() };
+  log('pick', { item: itemId });
+  renderMain();
+}
+function putBack(silent) {
+  if (!S.hand) return;
+  log('put_back', { item: S.hand.itemId });
+  S.hand = null;
+  if (!silent) renderMain();
+}
+function openPacket() {
+  var h = S.hand;
+  if (!h) return;
+  var it = ITEMS[h.itemId];
+  var p = { id: ++S.seq, itemId: h.itemId, n: it.n, openedAt: now(), step: S.stepIndex, cam: null, kind: null };
+  S.packets.push(p);
+  S.hand = null;
+  log('open', { item: p.itemId, needles: p.n });
+  checkIntRecovery(p);
+  var sc = SCEN[S.scen], def = sc.steps[S.stepIndex], r = S.steps[S.stepIndex];
+  var fulfilled = false, stepDone = false;
+  if (!S.count.requested && def && r && !r.done && def.items.indexOf(p.itemId) >= 0 && !r.got[p.itemId]) {
+    r.got[p.itemId] = true;
+    fulfilled = true;
+    if (def.items.every(function (id) { return r.got[id]; })) {
+      r.done = true;
+      r.doneAt = now();
+      stepDone = true;
+      log('request_done', { step: S.stepIndex + 1, seconds: Math.round((r.doneAt - r.shownAt) / 100) / 10 });
+      var tk = S.token, next = S.stepIndex + 1;
+      setTimeout(function () { if (S && S.token === tk && S.phase === 'case') showStep(next); }, def.pause || 2500);
+    }
+  }
+  if (!fulfilled) log('wrong_item_opened', { item: p.itemId });
+  if (S.mode === 'camera') cameraSee(p, fulfilled && def.cam ? def.cam[p.itemId] : null);
+  if (stepDone && def.interrupt && !S.flags.intFired && sc.interrupt) {
+    S.flags.intFired = true;
+    S.flags.intPacket = p.id;
+    var tk2 = S.token;
+    setTimeout(function () { if (S && S.token === tk2 && S.phase === 'case') startInterrupt(); }, 450);
+  }
+  renderMain();
+}
+function cameraSee(p, kind) {
+  p.kind = kind || 'ok';
+  if (kind === 'miss') {
+    p.cam = 'missed';
+    log('camera_missed_scripted', { item: p.itemId });
+    return;
+  }
+  p.cam = 'reading';
+  var tk = S.token;
+  setTimeout(function () {
+    if (!S || S.token !== tk || S.phase !== 'case') return;
+    var it = ITEMS[p.itemId], e;
+    p.cam = 'done';
+    if (kind === 'unreadable') {
+      e = { id: ++S.seq, itemId: null, trueItem: p.itemId, name: 'Unidentified packet', needles: null, source: 'camera', status: 'pending', createdAt: now(), simTime: fmt(simMin()), packetId: p.id, unreadable: true, wasUnreadable: true };
+    } else {
+      var mis = kind === 'misread';
+      e = { id: ++S.seq, itemId: p.itemId, trueItem: p.itemId, name: mis ? baseName(it) : it.name, needles: mis ? 1 : it.n, source: 'camera', status: 'pending', createdAt: now(), simTime: fmt(simMin()), packetId: p.id, conf: mis ? 'Medium' : 'High', misread: mis };
+    }
+    S.entries.push(e);
+    log('camera_suggestion', { item: p.itemId, shown_needles: e.needles === null ? 'unknown' : e.needles, kind: p.kind });
+    renderMain();
+    if (S.modal && S.modal.type === 'count' && S.modal.result && !S.modal.result.match) renderModal();
+  }, 1600);
+}
+function confirmEntry(id) {
+  var d = activeData(), e = findEntry(d, id);
+  if (!e || e.status !== 'pending' || e.unreadable) return;
+  e.status = 'confirmed';
+  e.confirmedAt = now();
+  e.order = ++orderSeq;
+  log('camera_confirmed', { item: e.trueItem, needles: e.needles, kind: e.misread ? 'misread' : 'ok', seconds_waiting: S.phase === 'case' ? Math.round((e.confirmedAt - e.createdAt) / 100) / 10 : 'handoff' });
+  toast('Confirmed: +' + needlesWord(e.needles), { id: e.id, was: 'pending' });
+  renderMain();
+}
+function rejectEntry(id) {
+  var d = activeData(), e = findEntry(d, id);
+  if (!e || e.status !== 'pending') return;
+  e.status = 'rejected';
+  e.rejectedAt = now();
+  log('camera_rejected', { item: e.trueItem, kind: e.wasUnreadable ? 'unreadable' : (e.misread ? 'misread' : 'ok') });
+  toast(e.unreadable ? 'Dismissed' : 'Suggestion rejected', { id: e.id, was: 'pending' });
+  renderMain();
+}
+function undoLast() {
+  var u = S && S.undo;
+  if (!u) return;
+  var e = findEntry(activeData(), u.id);
+  if (!e || (e.status !== 'confirmed' && e.status !== 'rejected')) { clearToast(); return; }
+  log('undo', { of: e.status, item: e.trueItem });
+  e.status = 'pending';
+  e.confirmedAt = null;
+  e.rejectedAt = null;
+  clearToast();
+  renderMain();
+}
+function fixEntry(id, itemId) {
+  var d = activeData(), e = findEntry(d, id);
+  if (!e) return;
+  var it = ITEMS[itemId], wasUnread = !!e.unreadable;
+  log(wasUnread ? 'camera_identified' : 'camera_fixed', { true_item: e.trueItem, from_needles: e.needles === null ? 'unknown' : e.needles, to_item: itemId, to_needles: it.n, kind: wasUnread ? 'unreadable' : (e.misread ? 'misread' : 'ok') });
+  e.itemId = itemId;
+  e.name = it.name;
+  e.needles = it.n;
+  e.status = 'confirmed';
+  e.confirmedAt = now();
+  e.order = ++orderSeq;
+  if (wasUnread) { e.unreadable = false; e.identified = true; } else { e.fixed = true; }
+  S.modal = null;
+  toast((wasUnread ? 'Added: +' : 'Fixed: +') + needlesWord(it.n) + ', ' + it.name);
+  renderModal();
+  renderMain();
+}
+function addManual(itemId, pid) {
+  var it = ITEMS[itemId], d = activeData(), t = now();
+  var e = { id: ++S.seq, itemId: itemId, name: it.name, needles: it.n, source: 'manual', status: 'confirmed', createdAt: t, confirmedAt: t, simTime: S.phase === 'handoff' ? d.clock : fmt(simMin()), packetId: pid != null ? pid : null, fromFeed: pid != null, order: ++orderSeq };
+  d.entries.push(e);
+  log('manual_add', { item: itemId, needles: it.n, via: pid != null ? 'camera view' : 'button' });
+  toast('Added: +' + needlesWord(it.n) + ', ' + it.name);
+  S.modal = S.modal && S.modal.from === 'count' ? { type: 'count' } : null;
+  renderModal();
+  renderMain();
+}
+function editEntry(id, itemId) {
+  var e = findEntry(S, id);
+  if (!e) return;
+  var it = ITEMS[itemId];
+  log('entry_edited', { from_needles: e.needles, to_item: itemId, to_needles: it.n, source: e.source });
+  e.itemId = itemId;
+  e.name = it.name;
+  e.needles = it.n;
+  e.edited = true;
+  e.editedAt = now();
+  S.modal = S.modal && S.modal.from === 'count' ? { type: 'count' } : null;
+  toast('Entry updated: ' + it.name + ', ×' + it.n);
+  renderModal();
+  renderMain();
+}
+function removeEntry(id) {
+  var e = findEntry(S, id);
+  if (!e) return;
+  e.status = 'deleted';
+  e.deletedAt = now();
+  log('entry_removed', { item: e.itemId, needles: e.needles, source: e.source });
+  S.modal = S.modal && S.modal.from === 'count' ? { type: 'count' } : null;
+  toast('Entry removed');
+  renderModal();
+  renderMain();
+}
+function wbAdd(n) {
+  S.tallies.push({ n: n, at: now() });
+  log('whiteboard_add', { needles: n });
+  renderMain();
+}
+function wbErase() {
+  if (!S.tallies.length) return;
+  var t = S.tallies.pop();
+  log('whiteboard_erase', { needles: t.n });
+  renderMain();
+}
+function checkIntRecovery(p) {
+  if (S.mode !== 'whiteboard' || !S.flags.intEndedAt || S.flags.intChecked) return;
+  var before = S.packets.filter(function (x) { return x !== p; });
+  var needed = before.reduce(function (a, x) { return a + x.n; }, 0);
+  S.flags.intRecovered = tallySum(S) >= needed;
+  S.flags.intChecked = true;
+}
+function startInterrupt() {
+  var cfg = SCEN[S.scen].interrupt;
+  if (S.hand) putBack(true);
+  S.modal = null;
+  renderModal();
+  clearToast();
+  S.interrupt = { stage: 'walk', startAt: now(), wrong: 0, cfg: cfg };
+  log('interruption_start', { from: cfg.who });
+  renderInterrupt();
+  var tk = S.token;
+  clearTimeout(intTimer);
+  intTimer = setTimeout(function () {
+    if (!S || S.token !== tk || !S.interrupt) return;
+    S.interrupt.stage = 'find';
+    renderInterrupt();
+  }, 4100);
+}
+function intPick(el) {
+  var I = S.interrupt;
+  if (!I) return;
+  if (el.getAttribute('data-opt') === I.cfg.answer) {
+    I.stage = 'found';
+    log('interruption_found', { wrong_picks: I.wrong });
+    renderInterrupt();
+  } else {
+    I.wrong++;
+    el.classList.remove('shake');
+    void el.offsetWidth;
+    el.classList.add('shake');
+  }
+}
+function intDone() {
+  var I = S.interrupt;
+  if (!I) return;
+  log('interruption_end', { seconds: Math.round((now() - I.startAt) / 100) / 10 });
+  S.flags.intEndedAt = now();
+  S.interrupt = null;
+  renderInterrupt();
+  renderMain();
+}
+function openCount() {
+  S.modal = { type: 'count' };
+  log('count_check_opened');
+  renderModal();
+}
+function doCount() {
+  var inp = $('countIn');
+  var raw = inp ? inp.value.trim() : '';
+  var v = parseInt(raw, 10);
+  if (!/^\d+$/.test(raw) || !isFinite(v)) {
+    S.modal = { type: 'count', err: 'Enter the number of needles the scrub nurse counted.' };
+    renderModal();
+    return;
+  }
+  var expected = S.initial + confirmedSum(S), pend = pendingSum(S);
+  var match = v === expected;
+  S.count.attempts.push({ at: now(), counted: v, expected: expected, pending: pend, match: match });
+  log('count_check', { counted: v, board_expected: expected, pending: pend, match: match });
+  if (match) {
+    S.count.resolved = true;
+    S.count.resolvedAt = now();
+    S.lastMatch = fmt(simMin());
+    S.lastMatchNote = 'count check';
+    S.lastMatchAt = now();
+  }
+  S.modal = { type: 'count', result: { counted: v, expected: expected, pend: pend, match: match } };
+  renderModal();
+  renderMain();
+}
+function wbCount(says) {
+  var board = S.initial + tallySum(S);
+  var actual = board === S.count.scrub;
+  S.count.attempts.push({ at: now(), saysMatch: says, actualMatch: actual, board: board, counted: S.count.scrub });
+  log('whiteboard_count_judgment', { says_match: says, board_total: board, scrub_count: S.count.scrub, actually_matches: actual });
+  if (says) {
+    S.count.saidMatch = true;
+    S.count.resolved = actual;
+    S.modal = null;
+    renderModal();
+    endCase();
+  } else {
+    S.modal = { type: 'count', result: 'no' };
+    renderModal();
+  }
+}
+function skipCount() {
+  S.count.skipped = true;
+  log('count_skipped');
+  S.modal = null;
+  renderModal();
+  endCase();
+}
+function endCase() {
+  if (S.phase !== 'case') return;
+  S.caseEnd = now();
+  S.hand = null;
+  S.interrupt = null;
+  log('case_end', { board_total: boardTotal(), actual: truthNeedles() });
+  S.phase = SCEN[S.scen].practice ? 'practiceDone' : 'handoffIntro';
+  S.modal = null;
+  render();
+  window.scrollTo(0, 0);
+}
+function handoffData(mode) {
+  var H = handoffDef();
+  var d = { room: H.room, from: H.from, clock: H.clock, initial: H.initial, lastMatch: H.lastMatch, sponges: H.sponges, instruments: H.instruments };
+  var t = now() - 600000;
+  d.entries = H.entries.map(function (x, i) {
+    var it = ITEMS[x.itemId];
+    var pending = mode === 'camera' && x.pending;
+    return { id: 'h' + i, itemId: x.itemId, trueItem: x.itemId, name: it.name, needles: it.n, source: x.source || 'camera', status: pending ? 'pending' : 'confirmed', createdAt: t, confirmedAt: pending ? null : t, simTime: x.time, conf: 'High', order: i + 1 };
+  });
+  d.packets = H.entries.map(function (x, i) { return { id: 100 + i * 3, itemId: x.itemId, n: ITEMS[x.itemId].n, entryId: 'h' + i, kind: 'ok' }; });
+  d.tallies = H.entries.map(function (x) { return { n: ITEMS[x.itemId].n }; });
+  return d;
+}
+function startHandoff() {
+  S.hd = handoffData(S.mode);
+  S.phase = 'handoff';
+  S.handoffStart = now();
+  orderSeq = 100;
+  log('handoff_start', { room: S.hd.room });
+  S.modal = null;
+  render();
+  window.scrollTo(0, 0);
+}
+function reviewed() {
+  S.handoffReviewed = now();
+  log('handoff_reviewed', { seconds: Math.round((S.handoffReviewed - S.handoffStart) / 100) / 10, pending_left: S.mode === 'camera' ? pendingList(S.hd).length : 0 });
+  S.phase = 'probe';
+  render();
+  window.scrollTo(0, 0);
+}
+function submitProbe() {
+  var ok = true, firstBad = null;
+  probeList().forEach(function (q) {
+    var errEl = $('err_' + q.key), v = S.probe[q.key], msg = '';
+    if (q.type === 'number') {
+      if (v === undefined || !/^\d{1,2}$/.test(String(v).trim())) msg = 'Enter a number, even if it’s a guess.';
+    } else if (!v) {
+      msg = 'Choose an answer. “Not sure” is fine.';
+    }
+    if (errEl) errEl.textContent = msg;
+    if (msg) { ok = false; if (!firstBad) firstBad = q.key; }
+  });
+  if (!ok) {
+    var el = document.querySelector('[data-q="' + firstBad + '"]');
+    if (el) el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    return;
+  }
+  S.probe.needles = String(parseInt(S.probe.needles, 10));
+  log('probe_submitted', { needles: S.probe.needles, recent: S.probe.recent, double_armed: S.probe.da, check_first: S.probe.check, confidence: S.probe.conf });
+  S.phase = 'survey';
+  render();
+  window.scrollTo(0, 0);
+}
+
+/* ---------- copy helpers ---------- */
+function fallbackCopy(text) {
+  var ta = document.createElement('textarea');
+  ta.value = text;
+  ta.setAttribute('readonly', '');
+  ta.style.position = 'fixed';
+  ta.style.top = '-1000px';
+  document.body.appendChild(ta);
+  ta.select();
+  var ok = false;
+  try { ok = document.execCommand('copy'); } catch (e) { }
+  document.body.removeChild(ta);
+  return ok;
+}
+function copyText(text, okMsg) {
+  function done(ok) { toast(ok ? okMsg : 'Couldn’t copy automatically. Take a screenshot instead.'); }
+  if (navigator.clipboard && window.isSecureContext) {
+    navigator.clipboard.writeText(text).then(function () { done(true); }, function () { done(fallbackCopy(text)); });
+  } else {
+    done(fallbackCopy(text));
+  }
+}
+function backToSetup() {
+  setupVals.pid = S.pid;
+  S = null;
+  clearInterval(clockTimer);
+  history.replaceState(null, '', location.pathname);
+  render();
+  window.scrollTo(0, 0);
+}
+
+/* ---------- events ---------- */
+var ACT = {
+  openrun: function (el) {
+    readSetup();
+    newRun(setupVals.pid, el.getAttribute('data-mode'), el.getAttribute('data-scen'));
+    render();
+    window.scrollTo(0, 0);
+  },
+  copylink: function (el) { updateLinks(); copyText(runLink(el.getAttribute('data-mode'), el.getAttribute('data-scen')), 'Link copied. Paste it into the meeting chat.'); },
+  copyall: function () { copyText(savedRuns().map(function (r) { return r.text; }).join('\n\n----------\n\n'), 'All saved results copied.'); },
+  clearall: function () {
+    if (window.confirm('Clear all results saved in this browser?')) {
+      try { localStorage.removeItem('ncbRuns'); } catch (e) { }
+      renderMain();
+    }
+  },
+  start: function () { startCase(); },
+  pick: function (el) { pick(el.getAttribute('data-item')); },
+  open: function () { openPacket(); },
+  putback: function () { putBack(false); },
+  confirm: function (el) { confirmEntry(el.getAttribute('data-id')); },
+  reject: function (el) { rejectEntry(el.getAttribute('data-id')); },
+  undo: function () { undoLast(); },
+  fix: function (el) { S.modal = { type: 'fix', id: el.getAttribute('data-id') }; log('camera_fix_opened'); renderModal(); },
+  fixpick: function (el) { fixEntry(S.modal.id, el.getAttribute('data-item')); },
+  add: function () {
+    var from = S.modal && S.modal.type === 'count' ? 'count' : null;
+    S.modal = { type: 'add', from: from };
+    log('manual_add_opened', { via: 'button' });
+    renderModal();
+  },
+  feedadd: function (el) {
+    var from = S.modal && S.modal.type === 'count' ? 'count' : null;
+    S.modal = { type: 'add', from: from, pid: +el.getAttribute('data-pid') };
+    log('manual_add_opened', { via: 'camera view' });
+    renderModal();
+  },
+  addpick: function (el) { addManual(el.getAttribute('data-item'), S.modal ? S.modal.pid : null); },
+  editrow: function (el) {
+    S.modal = { type: 'edit', id: el.getAttribute('data-id'), from: el.getAttribute('data-from') || null };
+    log('edit_opened');
+    renderModal();
+  },
+  editpick: function (el) { editEntry(S.modal.id, el.getAttribute('data-item')); },
+  removeentry: function () { removeEntry(S.modal.id); },
+  summary: function () { S.modal = { type: 'summary' }; log('handoff_summary_opened'); renderModal(); },
+  close: function () { S.modal = null; renderModal(); },
+  count: function () { openCount(); },
+  countgo: function () { doCount(); },
+  countagain: function () { S.modal = { type: 'count' }; renderModal(); },
+  countyes: function () { wbCount(true); },
+  countno: function () { wbCount(false); },
+  countskip: function () { skipCount(); },
+  countdone: function () { S.modal = null; renderModal(); endCase(); },
+  wb: function (el) { wbAdd(+el.getAttribute('data-n')); },
+  wberase: function () { wbErase(); },
+  intopt: function (el) { intPick(el); },
+  intdone: function () { intDone(); },
+  handoffgo: function () { startHandoff(); },
+  reviewed: function () { reviewed(); },
+  probesubmit: function () { submitProbe(); },
+  surveysubmit: function () { submitSurvey(); },
+  copyres: function () { copyText(resultsText(), 'Results copied. Paste them into the meeting chat.'); },
+  copyrow: function () { copyText(sheetRow(computeMetrics()), 'Row copied. Paste it into your spreadsheet.'); },
+  newrun: function () { backToSetup(); },
+  fac: function () { if (!S) return; S.modal = { type: 'fac' }; renderModal(); },
+  facskipcount: function () {
+    S.modal = null; renderModal();
+    log('facilitator_skip_to_count');
+    S.steps.forEach(function (r) { if (r) r.done = true; });
+    requestCount();
+  },
+  facend: function () { S.modal = null; log('facilitator_end_case'); endCase(); },
+  facresults: function () {
+    log('facilitator_jump_to_results');
+    if (S.phase === 'case') { S.caseEnd = now(); }
+    S.modal = null; S.interrupt = null; S.phase = 'results'; render();
+  },
+  facrestart: function () {
+    var pid = S.pid, mode = S.mode, scen = S.scen;
+    newRun(pid, mode, scen);
+    clearInterval(clockTimer);
+    render();
+  },
+  facsetup: function () { backToSetup(); }
+};
+document.addEventListener('click', function (ev) {
+  var el = ev.target.closest ? ev.target.closest('[data-act]') : null;
+  if (!el) return;
+  var fn = ACT[el.getAttribute('data-act')];
+  if (fn) fn(el, ev);
+});
+function onAnswer(t) {
+  if (!t.getAttribute) return;
+  if (S && S.phase === 'probe' && t.getAttribute('data-q')) {
+    S.probe[t.getAttribute('data-q')] = t.value;
+    var err = $('err_' + t.getAttribute('data-q'));
+    if (err) err.textContent = '';
+  }
+  if (S && S.phase === 'survey' && t.getAttribute('data-s')) {
+    var key = t.getAttribute('data-s');
+    S.survey[key] = t.value;
+    var e1 = $('serr_' + key);
+    if (e1) e1.textContent = '';
+    var row = $('row_' + key);
+    if (row) row.classList.remove('missing');
+    ['sus', 'cam'].forEach(function (g) {
+      var box = $('serr_' + g);
+      if (box && !box.parentNode.querySelector('.sus-row.missing')) box.textContent = '';
+    });
+  }
+}
+document.addEventListener('input', function (ev) {
+  var t = ev.target;
+  if (!S && t.id === 'sPid') updateLinks();
+  onAnswer(t);
+});
+document.addEventListener('change', function (ev) {
+  var t = ev.target;
+  onAnswer(t);
+});
+document.addEventListener('keydown', function (ev) {
+  if (!S) return;
+  if (ev.key === 'Enter' && S.modal && S.modal.type === 'count' && ev.target && ev.target.id === 'countIn') {
+    ev.preventDefault();
+    doCount();
+  }
+  if (ev.key === 'Escape' && S.modal && !S.interrupt && ['add', 'fix', 'fac', 'summary', 'edit'].indexOf(S.modal.type) >= 0) {
+    S.modal = (S.modal.type === 'add' || S.modal.type === 'edit') && S.modal.from === 'count' ? { type: 'count' } : null;
+    renderModal();
+  }
+  if (ev.key === 'F' && ev.shiftKey && ev.altKey) { S.modal = { type: 'fac' }; renderModal(); }
+});
+window.addEventListener('beforeunload', function (ev) {
+  if (S && ['case', 'handoff', 'probe', 'survey'].indexOf(S.phase) >= 0) { ev.preventDefault(); ev.returnValue = ''; }
+});
+
+/* ---------- boot ---------- */
+(function boot() {
+  var q = new URLSearchParams(location.search);
+  var mode = q.get('mode'), scen = SCEN_PARAM[q.get('scenario') || ''], pid = q.get('pid') || '';
+  setupVals.pid = pid;
+  if (MODES[mode] && scen) newRun(pid, mode, scen);
+  render();
+})();
+})();
+</script>
+</body>
+</html>
