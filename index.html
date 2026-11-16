@@ -95,6 +95,7 @@ input[type=number]{font-size:22px;font-weight:600;max-width:160px}
 .coach .ico{flex:none;margin-top:2px}
 .rq .primary{width:100%}
 .row.nt{grid-template-columns:minmax(0,1fr) auto 34px}
+.r-flag{display:inline-block;margin-left:8px;font-size:11.5px;font-weight:700;color:#7a4b00;background:#fde9b8;border-radius:4px;padding:1px 7px;vertical-align:1px}
 .pk-band{width:8px;flex:none}
 .pk-body{display:flex;flex-direction:column;justify-content:center;gap:5px;padding:7px 10px;flex:1;min-width:0}
 .pk-top{display:flex;align-items:center;justify-content:space-between;gap:8px;min-width:0}
@@ -384,6 +385,7 @@ var SCEN = {
   }
 };
 var SCEN_PARAM = { practice: 'practice', '1': 's1', '2': 's2' };
+var HANDOFF = false;
 var DEMO_NAMES = { camera: 'Camera-assisted board', whiteboard: 'Today’s whiteboard' };
 
 var STANDARD = [
@@ -877,6 +879,12 @@ function sourceLabel(e) {
   if (e.identified) return 'Camera, named by you';
   return e.fixed ? 'Camera, fixed by you' : 'Camera';
 }
+function lessSure(e) { return e.source === 'camera' && e.conf === 'Medium' && !e.fixed && !e.edited; }
+function packetOf(e) {
+  if (e.packetId != null) return S.packets.filter(function (p) { return p.id === e.packetId; })[0] || null;
+  var R = reconcile();
+  return S.packets.filter(function (p) { return R.linked[p.id] === e; })[0] || null;
+}
 function rowHTML(e, ctx, d, opts) {
   opts = opts || {};
   var age = 999;
@@ -887,7 +895,7 @@ function rowHTML(e, ctx, d, opts) {
   var attrs = opts.editable ? ' type="button" data-act="editrow" data-id="' + e.id + '"' + (opts.from ? ' data-from="' + opts.from + '"' : '') + ' title="Edit or remove this entry"' : '';
   return '<' + tag + attrs + ' class="row' + (plain ? ' nt' : '') + (opts.editable ? ' rowbtn' : '') + (isNew ? ' new' : '') + (since ? ' since' : '') + '"' + (isNew ? ' style="animation-delay:-' + age.toFixed(1) + 's"' : '') + '>' +
     (plain ? '' : '<span class="r-time">' + esc(e.simTime) + '</span>') +
-    '<span class="r-name">' + esc(e.name) + (e.edited ? ' <span class="r-src">(changed)</span>' : '') + '</span>' +
+    '<span class="r-name">' + esc(e.name) + (e.edited ? ' <span class="r-src">(changed)</span>' : '') + (opts.flag && lessSure(e) ? '<span class="r-flag">Camera was less sure</span>' : '') + '</span>' +
     '<span class="r-src">' + sourceLabel(e) + '</span><span class="r-n">×' + e.needles + '</span></' + tag + '>';
 }
 function pendHTML(e, ctx) {
@@ -1149,12 +1157,12 @@ function computeMetrics() {
   M.countTime = S.count.requested && S.caseEnd ? (S.caseEnd - S.count.requestAt) / 1000 : null;
   if (!sc.practice) {
     M.reviewSeconds = S.handoffReviewed ? (S.handoffReviewed - S.handoffStart) / 1000 : null;
-    M.probe = probeList().map(function (q) {
+    if (HANDOFF) M.probe = probeList().map(function (q) {
       var ans = S.probe[q.key];
       var label = ans === undefined || ans === '' ? 'no answer' : (q.options ? (q.options.filter(function (o) { return o[0] === ans; })[0] || [ans, ans])[1] : ans);
       return { key: q.key, text: q.text, raw: ans, answer: label, correct: q.truth ? String(ans) === q.truth : null };
     });
-    M.probeScore = M.probe.filter(function (p) { return p.correct === true; }).length;
+    M.probeScore = M.probe ? M.probe.filter(function (p) { return p.correct === true; }).length : null;
     M.seq = S.survey.seq || null;
     M.demand = S.survey.demand || null;
     M.sus = susScore();
@@ -1185,6 +1193,7 @@ function sheetRow(M) {
     ['trust_1to5', M.trust], ['awareness_1to5', M.aware], ['comfort_1to5', M.comfort]
   ];
   function clean(v) { return v === null || v === undefined ? '' : String(v).replace(/[\t\n]/g, ' '); }
+  if (!HANDOFF) cols = cols.filter(function (c) { return !/^(sa_|handoff_)/.test(c[0]); });
   return cols.map(function (c) { return c[0]; }).join('\t') + '\n' + cols.map(function (c) { return clean(c[1]); }).join('\t');
 }
 function kv(label, value, cls) { return '<div class="kv"><span>' + esc(label) + '</span><b' + (cls ? ' class="' + cls + '"' : '') + '>' + esc(value) + '</b></div>'; }
@@ -1227,13 +1236,13 @@ function resultsHTML() {
     kv('Time from count called to finished', secStr(M.countTime)) + '</div>';
   var sec5 = '';
   if (scored) {
-    sec5 = '<div class="res-sec"><h3>Handoff and awareness questions</h3>' +
+    sec5 = (!M.probe ? '' : '<div class="res-sec"><h3>Handoff and awareness questions</h3>' +
       kv('Time spent reviewing the handoff', secStr(M.reviewSeconds)) +
       M.probe.map(function (p, i) {
         var mark = p.correct === null ? '' : (p.correct ? ' ✓' : ' ✗');
         return kv('Q' + (i + 1) + ' answer', p.answer + mark, p.correct === null ? '' : (p.correct ? 'good' : 'badv'));
       }).join('') +
-      kv('Score', M.probeScore + ' of 4') + '</div>' +
+      kv('Score', M.probeScore + ' of 4') + '</div>') +
       '<div class="res-sec"><h3>Ratings</h3>' +
       kv('Ease (1 very difficult, 7 very easy)', M.seq ? M.seq + ' of 7' : 'not answered') +
       kv('Mental demand (1 very low, 7 very high)', M.demand ? M.demand + ' of 7' : 'not answered') +
@@ -1250,7 +1259,7 @@ function resultsHTML() {
   var otherMode = S.mode === 'camera' ? 'whiteboard' : 'camera';
   var head = S.demo
     ? '<p class="eyebrow">Demo complete</p><h1>That’s the end of the demo</h1>' +
-      '<p>Nothing was saved. The details below are what a scored run records. A real session also asks for ratings before this screen.</p>' +
+      '<p>Nothing was saved. The details below are what a scored run records. A real session asks for ratings before this screen.</p>' +
       '<div class="res-actions"><button class="primary" data-act="demo" data-mode="' + otherMode + '">Try ' + esc(DEMO_NAMES[otherMode].toLowerCase()) + '</button>' +
       '<button data-act="demo" data-mode="' + S.mode + '">Run this one again</button><button data-act="demoexit">Back to setup</button></div>'
     : '<p class="eyebrow">Run complete</p><h1>Thanks, that’s the end of this run</h1>' +
@@ -1326,7 +1335,9 @@ function modalHTML() {
   } else if (m.type === 'edit') {
     var ed = findEntry(S, m.id);
     if (!ed) { S.modal = null; return ''; }
-    body = '<h2 id="dlgT">Change this line</h2><p><b>' + esc(ed.name) + '</b> is counted as <b>' + needlesWord(ed.needles) + '</b>. How many should it be?</p>' + needlePick('editpick', ed.needles) +
+    var edp = packetOf(ed);
+    body = '<h2 id="dlgT">How many needles are in this packet?</h2>' +
+      (edp ? lookHTML(edp.itemId, 'The board counts <b>' + esc(ed.name) + '</b> as <b>' + needlesWord(ed.needles) + '</b>. You look at the packet yourself.') : '<p>The board counts <b>' + esc(ed.name) + '</b> as <b>' + needlesWord(ed.needles) + '</b>.</p>') + needlePick('editpick', ed.needles) +
       '<div class="dlg-actions"><button class="ghost" data-act="' + (m.from === 'count' ? 'countback' : 'close') + '">Cancel</button><button data-act="removeentry">' + icon('x') + 'Remove this line</button></div>';
   } else if (m.type === 'summary') {
     var plist = pendingList(S);
@@ -1373,9 +1384,16 @@ function countModalHTML(m) {
   }
   var diff = r.counted - r.expected;
   var since = S.entries.filter(function (x) { return x.status === 'confirmed' && (x.confirmedAt || x.createdAt) >= S.lastMatchAt; }).sort(function (a, b) { return b.order - a.order; });
-  return '<h2 id="dlgT">Count check</h2><div class="result bad">' + icon('alert') + '<span>It doesn’t match. The nurse counted <b>' + r.counted + '</b> and the board says <b>' + r.expected + '</b>.</span></div>' +
-    '<p>' + (plist.length ? 'Start with the ' + plural(plist.length, 'card', 'cards') + ' still waiting on the board.' : (diff > 0 ? 'The board is short by ' + diff + '. Look for a packet with no box in the camera picture, or a line with too few needles.' : 'The board is over by ' + (-diff) + '. Look for a line that was added twice, or one with too many needles.')) + '</p>' +
-    '<div class="cmp"><div>' + (since.length ? '<div class="mini-log">' + since.map(function (x) { return rowHTML(x, 'summary', S, { editable: true, from: 'count' }); }).join('') + '</div><p class="log-hint">Click a line to change or remove it.</p>' : '<p class="muted">Nothing counted yet.</p>') + '</div>' +
+  var R = reconcile();
+  var noBox = S.packets.filter(function (p) { return !R.linked[p.id] && p.cam !== 'reading' && !S.entries.some(function (x) { return x.status === 'pending' && x.packetId === p.id; }); }).length;
+  var flagged = since.some(lessSure), how;
+  if (plist.length) how = 'Start with the ' + plural(plist.length, 'card', 'cards') + ' still waiting on the board.';
+  else if (diff > 0 && noBox) how = '<b>' + noBox + ' ' + plural(noBox, 'packet', 'packets') + ' in the camera picture ' + plural(noBox, 'has', 'have') + ' no box</b>, so the board never counted ' + plural(noBox, 'it', 'them') + '. Click the packet to add it.';
+  else if (diff > 0) how = 'Every packet has a box, so <b>one of these lines has too few needles</b>. Click a line to look at that packet again.' + (flagged ? ' Start with the one the camera was less sure about.' : '');
+  else how = 'The board has ' + (-diff) + ' too many. <b>One of these lines has too many needles</b>, or was added twice. Click a line to look at that packet again.';
+  return '<h2 id="dlgT">Count check</h2><div class="result bad">' + icon('alert') + '<span>It doesn’t match. The nurse counted <b>' + r.counted + '</b> and the board says <b>' + r.expected + '</b>' + (diff > 0 ? ', so the board is short by ' + diff : '') + '.</span></div>' +
+    '<p>' + how + '</p>' +
+    '<div class="cmp"><div>' + (since.length ? '<div class="mini-log">' + since.map(function (x) { return rowHTML(x, 'summary', S, { editable: true, from: 'count', flag: true }); }).join('') + '</div>' : '<p class="muted">Nothing counted yet.</p>') + '</div>' +
     '<div>' + feedHTML(S, true) + '</div></div>' +
     '<div class="dlg-actions"><button class="ghost" data-act="countskip">I can’t find it, move on</button>' +
     (plist.length ? '<button data-act="countagain">Compare again</button><button class="primary" data-act="close" data-autofocus>Back to the board</button>'
@@ -1687,7 +1705,7 @@ function endCase() {
   S.hand = null;
   S.interrupt = null;
   log('case_end', { board_total: boardTotal(), actual: truthNeedles() });
-  S.phase = SCEN[S.scen].practice ? 'practiceDone' : 'handoffIntro';
+  S.phase = SCEN[S.scen].practice ? 'practiceDone' : (HANDOFF ? 'handoffIntro' : (S.demo ? 'results' : 'survey'));
   S.modal = null;
   render();
   window.scrollTo(0, 0);
