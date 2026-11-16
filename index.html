@@ -73,9 +73,24 @@ input[type=number]{font-size:22px;font-weight:600;max-width:160px}
 .pk{display:flex;align-items:stretch;justify-content:flex-start;gap:0;padding:0;text-align:left;min-height:50px;overflow:hidden;border-radius:8px;border:1px solid var(--line2);background:#fbfaf7;width:100%}
 .pk:hover{background:#f4f2ec;border-color:#a9b1bc}
 .pk:disabled{opacity:.42;cursor:default;background:#fbfaf7;border-color:var(--line2)}
-.pk.ask{border-color:var(--accent);box-shadow:0 0 0 3px var(--accent);background:#fff;animation:askpulse 1.6s ease-in-out infinite}
-.pk.ask:hover{background:#eef4ff}
-@keyframes askpulse{50%{box-shadow:0 0 0 3px var(--accent),0 0 0 8px rgba(42,99,214,.18)}}
+@keyframes askpulse{50%{box-shadow:0 0 0 6px rgba(42,99,214,.18)}}
+.ask-list{display:flex;flex-direction:column;gap:8px;margin:6px 0 2px}
+.askpk{display:flex;align-items:center;justify-content:flex-start;gap:11px;width:100%;min-height:56px;padding:0 14px 0 0;border:2px solid var(--accent);border-radius:10px;background:#fff;text-align:left;overflow:hidden;animation:askpulse 1.6s ease-in-out infinite}
+.askpk:hover{background:#eef4ff}
+.askpk .pk-band{align-self:stretch;width:9px}
+.askpk .pk-name{font-size:16px}
+.ask-body{display:flex;flex-direction:column;align-items:flex-start;gap:4px;flex:1;min-width:0;padding:8px 0}
+.ask-go{margin-left:auto;font-weight:650;font-size:14px;color:var(--accent-text);white-space:nowrap}
+.askpk.got{border:1px solid #bfdcc6;background:#f1f8f2;color:var(--ok-text);padding:0 14px;animation:none}
+.askpk.got .ask-go{color:var(--ok-text)}
+.npick{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:12px 0 4px}
+.npick button{flex-direction:column;align-items:flex-start;gap:3px;padding:14px 16px;min-height:74px;text-align:left}
+.npick button b{font-size:19px}
+.npick button span{font-size:13px;color:var(--muted);font-weight:400}
+.npick button.cur{border-color:var(--accent)}
+.look{display:flex;gap:14px;align-items:center;margin:10px 0 4px}
+.look .snap{flex:none;border-radius:8px;overflow:hidden;line-height:0}
+.look p{margin:0}
 .coach{display:flex;gap:9px;align-items:flex-start;background:#fff8dc;border:1px solid #e6cf7a;color:#4d3d00;border-radius:10px;padding:10px 13px;font-size:15px;line-height:1.35}
 .coach .ico{flex:none;margin-top:2px}
 .rq .primary{width:100%}
@@ -306,7 +321,7 @@ summary{cursor:pointer;font-weight:600}
 @media (max-width:1000px){.work{grid-template-columns:1fr}.b-main{grid-template-columns:1fr}.big-num{font-size:84px}.cmp{grid-template-columns:1fr}}
 @media (max-width:560px){.opts{grid-template-columns:1fr 1fr}.cart{grid-template-columns:1fr}.card{padding:22px 18px}.lk{grid-template-columns:1fr 1fr}.lk>div{grid-column:1/-1}}
 @media (max-height:820px) and (min-width:1001px){.rq-done{display:none}.rq-text{font-size:17px;margin:3px 0 6px}.cart{gap:5px}.pk{min-height:46px}.pk-body{padding:4px 10px;gap:3px}.work .col:first-child>.panel{padding:9px 13px}}
-@media (prefers-reduced-motion:reduce){.cam-reading,.dark .pend.late,.pk.ask{animation:none}}
+@media (prefers-reduced-motion:reduce){.cam-reading,.dark .pend.late,.askpk{animation:none}}
 </style>
 </head>
 <body>
@@ -407,16 +422,16 @@ var HANDOFFS = {
 function handoffDef() { return HANDOFFS[S.scen] || HANDOFFS.s1; }
 function probeList() {
   var h = handoffDef();
-  var last = h.entries[h.entries.length - 1].itemId;
   var total = h.initial + h.entries.reduce(function (a, x) { return a + ITEMS[x.itemId].n; }, 0);
   var nDa = h.entries.filter(function (x) { return ITEMS[x.itemId].da; }).length;
-  var opts = h.opts.map(function (id) { return [id, ITEMS[id].name]; }).concat([['unsure', 'Not sure']]);
+  var nWait = h.entries.filter(function (x) { return x.pending; }).length;
+  var few = [['0', '0'], ['1', '1'], ['2', '2'], ['3', '3'], ['unsure', 'Not sure']];
   return [
-    { key: 'needles', type: 'number', text: 'How many needles should be on the field in ' + h.room + ' right now?', truth: String(total) },
-    { key: 'recent', type: 'choice', text: 'What was the most recent suture added?', truth: last, options: opts },
-    { key: 'da', type: 'choice', text: 'How many double-armed sutures have been added in this case?', truth: String(nDa),
-      options: [['0', '0'], ['1', '1'], ['2', '2'], ['3', '3'], ['unsure', 'Not sure']] },
-    { key: 'check', type: 'choice', text: 'If the next count comes up 2 needles short, which addition would you check first?', truth: last, options: opts },
+    { key: 'needles', type: 'number', text: 'How many needles should be out in ' + h.room + ' right now?', truth: String(total) },
+    { key: 'waiting', type: 'choice', text: 'How many packets were still waiting to be checked?', truth: String(nWait), options: few },
+    { key: 'da', type: 'choice', text: 'How many double-armed packets have been added in this case?', truth: String(nDa), options: few },
+    { key: 'check', type: 'choice', text: 'If the next count comes up 2 needles short, what would you check first?', truth: 'waiting',
+      options: [['first', 'The first packet of the case'], ['hand', 'The packet that was added by hand'], ['waiting', 'The packet still waiting to be checked'], ['unsure', 'Not sure']] },
     { key: 'conf', type: 'choice', text: 'How confident are you in your answers?',
       options: [['1', '1 (not at all)'], ['2', '2'], ['3', '3'], ['4', '4'], ['5', '5 (very)']] }
   ];
@@ -527,14 +542,14 @@ function snapSVG(e) {
     '<text x="28" y="32" font-size="12.5" font-weight="700" fill="#1d2127" font-family="' + FONT + '">' + esc(baseName(it)) + '</text>' +
     (it.da
       ? '<rect x="27" y="39" width="66" height="14" rx="3" fill="#fbe0cf"/><text x="31" y="49.5" font-size="9.5" font-weight="700" fill="#7a2e0e" font-family="' + FONT + '">Double-armed</text>'
-      : '<text x="28" y="49" font-size="9.5" fill="#3f4650" font-family="' + FONT + '">' + esc(it.needle) + '</text>') +
+      : '<rect x="28" y="43" width="44" height="4" rx="1" fill="#a3aab3"/>') +
     '<g fill="#2a2f36" transform="translate(28 58)">' + bars(e.trueItem || e.itemId, 62, 10) + '</g>' +
-    '<rect x="25" y="20" width="' + (baseName(it).length * 7 + 8) + '" height="16" rx="2" fill="none" stroke="#2fae6a" stroke-width="1.4"/>';
+    (e.plain ? '' : '<rect x="25" y="20" width="' + (baseName(it).length * 7 + 8) + '" height="16" rx="2" fill="none" stroke="#2fae6a" stroke-width="1.4"/>');
   if (e.misread) {
     s += '<rect x="20" y="37" width="96" height="21" rx="10.5" fill="#5aa7d6" stroke="#3d8cbd" transform="rotate(7 66 47)"/>' +
       '<path d="M34 44c18 3 42 6 68 9" stroke="#8ec8ea" stroke-width="2" fill="none" stroke-linecap="round" opacity=".8"/>' +
       '<rect x="18" y="35" width="100" height="26" rx="3" fill="none" stroke="#f6b93b" stroke-width="1.4" stroke-dasharray="4 3"/>';
-  } else {
+  } else if (!e.plain) {
     s += '<rect x="25" y="38" width="70" height="16" rx="2" fill="none" stroke="#2fae6a" stroke-width="1.4"/>';
   }
   return s + '</g></svg>';
@@ -548,7 +563,8 @@ function reconcile() {
     if (e.packetId != null && !linked[e.packetId]) { linked[e.packetId] = e; used[e.id] = true; }
   });
   conf.filter(function (e) { return !used[e.id]; }).sort(function (a, b) { return a.createdAt - b.createdAt; }).forEach(function (e) {
-    var p = S.packets.filter(function (x) { return !linked[x.id] && x.itemId === e.itemId; })[0];
+    var free = S.packets.filter(function (x) { return !linked[x.id]; });
+    var p = e.itemId ? free.filter(function (x) { return x.itemId === e.itemId; })[0] : (free.filter(function (x) { return x.n === e.needles; })[0] || free[0]);
     if (p) linked[p.id] = e; else extra.push(e);
   });
   return { conf: conf, linked: linked, extra: extra };
@@ -794,7 +810,7 @@ function updateLinks() {
 /* ---------- intro ---------- */
 function introHTML() {
   var sc = SCEN[S.scen], cam = S.mode === 'camera';
-  var steps = '<li>Someone asks for a suture, which is a needle with thread attached. Click the <b>highlighted packet</b> on the cart to open it for them.</li>';
+  var steps = '<li>Someone asks for a suture, which is a needle with thread attached. Click the <b>packet under the request</b> to open it for them.</li>';
   if (cam) {
     steps += '<li>A camera sees the packet and puts a card on the count board. Read the card. Click <b>Correct</b> if it’s right, or <b>Not right</b> to fix it.</li>' +
       '<li>The camera can be wrong or miss a packet, so the count is still yours. A packet with <b>no box</b> in the camera picture hasn’t been counted. Click it to add it.</li>' +
@@ -808,7 +824,7 @@ function introHTML() {
     '<h1>You’re the nurse keeping the needle count</h1>' +
     '<p>During surgery, every needle handed to the surgical team has to be counted so that none is left behind. Keeping that count is your job.</p>' +
     '<ol class="steps">' + steps + '</ol>' +
-    '<div class="callout">Most packets hold 1 needle. A <b>double-armed</b> packet holds <b>2 needles</b>.</div>' +
+    '<div class="callout">The suture names don’t matter. What matters is how many needles a packet holds. Most hold 1. A <b>double-armed</b> packet holds <b>2</b>.</div>' +
     '<p class="muted">Nothing is timed, so go at your own pace. Please think out loud as you go. We’re testing the design, not you.</p>' +
     '<div class="go"><button class="primary big" data-act="start">Start</button></div>' +
     '</div></div>';
@@ -817,7 +833,7 @@ function introHTML() {
 /* ---------- case ---------- */
 function caseHTML() {
   var board = S.mode === 'whiteboard' ? wbHTML(S, 'case') : boardHTML(S, 'case');
-  return '<div class="work"><div class="col">' + coachHTML() + requestsHTML() + cartHTML() + '</div><div class="col">' + board + '</div></div>';
+  return '<div class="work"><div class="col">' + coachHTML() + requestsHTML() + '</div><div class="col">' + board + '</div></div>';
 }
 function neededItems() {
   var def = SCEN[S.scen].steps[S.stepIndex], r = S.steps[S.stepIndex];
@@ -828,7 +844,7 @@ function coachHTML() {
   if (!S.demo && !SCEN[S.scen].practice) return '';
   var need = neededItems(), cam = S.mode === 'camera', tip;
   if (S.count.requested) tip = 'The nurse wants a count. Click <b>Start count check</b>.';
-  else if (need.length) tip = 'Click the <b>highlighted packet</b> on the cart' + (need.length > 1 ? ', then the next one' : '') + '.';
+  else if (need.length) tip = 'Click the <b>packet under the request</b> to open it' + (need.length > 1 ? ', then the next one' : '') + '.';
   else if (cam && pendingList(S).length) tip = 'The camera saw a packet. Read the card on the board, then click <b>Correct</b> or <b>Not right</b>.';
   else if (!cam && S.packets.length && tallySum(S) < S.packets.reduce(function (a, p) { return a + p.n; }, 0)) tip = 'Now write it on the whiteboard. Click <b>+1</b>, or <b>+2</b> for a double-armed packet.';
   else tip = 'Nothing to do right now. The next request is coming.';
@@ -843,24 +859,18 @@ function requestsHTML() {
   } else {
     var def = sc.steps[S.stepIndex], r = S.steps[S.stepIndex];
     if (def && r && !r.done) {
-      body = '<div class="rq"><div class="rq-who">' + esc(def.who) + ' asks</div><p class="rq-text">“' + esc(def.text) + '”</p><ul class="rq-items">' +
+      body = '<div class="rq"><div class="rq-who">' + esc(def.who) + ' asks</div><p class="rq-text">“' + esc(def.text) + '”</p><div class="ask-list">' +
         def.items.map(function (id) {
-          var got = r.got[id];
-          return '<li class="' + (got ? 'got' : '') + '"' + (got ? '' : ' data-need="' + id + '"') + '>' + (got ? icon('check', 16) : '<span class="box"></span>') + esc(ITEMS[id].name) + '</li>';
-        }).join('') + '</ul></div>';
+          var it = ITEMS[id];
+          if (r.got[id]) return '<div class="askpk got">' + icon('check', 16) + '<span class="pk-name">' + esc(baseName(it)) + '</span><span class="ask-go">Opened</span></div>';
+          return '<button class="askpk" data-act="pick" data-item="' + id + '" data-need="' + id + '" aria-label="Open ' + esc(it.name) + '"><span class="pk-band" style="background:' + MAT_COLOR[it.mat] + '"></span>' +
+            '<span class="ask-body"><span class="pk-name">' + esc(baseName(it)) + '</span>' + (it.da ? '<span class="pk-da">Double-armed · 2 needles</span>' : '<span class="pk-meta">1 needle</span>') + '</span><span class="ask-go">Open</span></button>';
+        }).join('') + '</div></div>';
     } else {
       body = '<p class="rq-wait">No request right now.</p>';
     }
   }
   return '<section class="panel" aria-live="polite"><h2 class="ph">Request</h2>' + body + '</section>';
-}
-function cartHTML() {
-  var need = neededItems();
-  return '<section class="panel"><h2 class="ph">Supply cart <span>' + (need.length ? 'Click the highlighted packet' : '') + '</span></h2><div class="cart">' +
-    CART.map(function (id) {
-      var ask = need.indexOf(id) >= 0;
-      return '<button class="pk' + (ask ? ' ask' : '') + '" data-act="pick" data-item="' + id + '"' + (ask ? '' : ' disabled') + ' aria-label="Open ' + esc(ITEMS[id].name) + '">' + packetInner(id) + '</button>';
-    }).join('') + '</div></section>';
 }
 function sourceLabel(e) {
   if (e.source === 'manual') return 'Added by you';
@@ -1116,7 +1126,7 @@ function computeMetrics() {
       var us = S.entries.filter(function (e) { return e.wasUnreadable; })[0];
       if (!up || !us) M.unread = 'not reached';
       else if (us.status === 'pending') M.unread = 'left unidentified';
-      else if (us.status === 'confirmed') M.unread = us.itemId === us.trueItem ? 'identified correctly' : (us.needles === up.n ? 'identified as a different suture (same needle count)' : 'identified wrong (wrong needle count)');
+      else if (us.status === 'confirmed') M.unread = us.needles === up.n ? 'identified correctly' : 'identified wrong (wrong needle count)';
       else { var ul = R.linked[up.id]; M.unread = ul && ul.needles === up.n ? 'dismissed, then added correctly' : 'dismissed (not counted)'; }
     }
     var camE = S.entries.filter(function (e) { return e.source === 'camera'; });
@@ -1287,34 +1297,36 @@ function resultsText() {
 }
 
 /* ---------- modals ---------- */
-function itemPickList(act, highlight) {
-  return '<div class="pick">' + CART.map(function (id) {
-    var it = ITEMS[id];
-    return '<button data-act="' + act + '" data-item="' + id + '"' + (highlight === id ? ' style="border-color:var(--accent)"' : '') + '><span>' + esc(it.name) + '</span><b>×' + it.n + ' ' + plural(it.n, 'needle', 'needles') + '</b></button>';
+function needlePick(act, current) {
+  return '<div class="npick">' + [1, 2].map(function (n) {
+    return '<button data-act="' + act + '" data-n="' + n + '"' + (current === n ? ' class="cur"' : '') + '><b>' + needlesWord(n) + '</b><span>' + (n === 1 ? 'A regular packet' : 'A double-armed packet') + (current === n ? ' (what it says now)' : '') + '</span></button>';
   }).join('') + '</div>';
 }
-function lastAskHTML() {
-  if (S.phase !== 'case') return '';
-  var steps = SCEN[S.scen].steps, def = steps[Math.min(S.stepIndex, steps.length - 1)];
-  return def ? '<p class="muted small">The last request was “' + esc(def.text) + '”</p>' : '';
+function lookHTML(itemId, text) {
+  return '<div class="look"><div class="snap">' + snapSVG({ itemId: itemId, trueItem: itemId, plain: true }) + '</div><p>' + text + '</p></div>';
+}
+function nameFor(itemId, n) {
+  if (!itemId) return n === 2 ? 'Packet added by hand, double-armed' : 'Packet added by hand';
+  var it = ITEMS[itemId];
+  return n === it.n ? it.name : baseName(it);
 }
 function modalHTML() {
   var m = S.modal, d = activeData(), body = '', wide = false;
   if (m.type === 'add') {
-    body = '<h2 id="dlgT">' + (m.pid != null ? 'What is this packet?' : 'Add a packet by hand') + '</h2><p>Choose what was opened. The board adds the right number of needles.</p>' + lastAskHTML() + itemPickList('addpick') +
+    var pk = m.pid != null ? d.packets.filter(function (x) { return x.id === m.pid; })[0] : null;
+    body = '<h2 id="dlgT">How many needles are in this packet?</h2>' +
+      (pk ? lookHTML(pk.itemId, 'The camera missed this packet, so you look at it yourself.') : '<p>Use this for a packet the camera never saw.</p>') + needlePick('addpick') +
       '<div class="dlg-actions"><button class="ghost" data-act="' + (m.from === 'count' ? 'countback' : 'close') + '">Cancel</button></div>';
   } else if (m.type === 'fix') {
     var e = findEntry(d, m.id);
     if (!e) { S.modal = null; return ''; }
-    body = e.unreadable
-      ? '<h2 id="dlgT">What is this packet?</h2><p>The camera couldn’t read the label. Choose what was opened.</p>' + lastAskHTML() + itemPickList('fixpick')
-      : '<h2 id="dlgT">What was actually opened?</h2><p>The camera says <b>' + esc(e.name) + '</b>, <b>' + needlesWord(e.needles) + '</b>. Choose the right one.</p>' + lastAskHTML() + itemPickList('fixpick', e.misread ? null : e.itemId);
-    body += '<div class="dlg-actions"><button class="ghost" data-act="close">Cancel</button><button data-act="reject" data-id="' + e.id + '">' + icon('x') + 'Nothing was opened, remove this card</button></div>';
+    body = '<h2 id="dlgT">How many needles are in this packet?</h2>' +
+      lookHTML(e.trueItem || e.itemId, e.unreadable ? 'The camera couldn’t read the label, so you look at the packet yourself.' : 'The camera says <b>' + needlesWord(e.needles) + '</b>. You look at the packet yourself.') + needlePick('fixpick') +
+      '<div class="dlg-actions"><button class="ghost" data-act="close">Cancel</button><button data-act="reject" data-id="' + e.id + '">' + icon('x') + 'Nothing was opened, remove this card</button></div>';
   } else if (m.type === 'edit') {
     var ed = findEntry(S, m.id);
     if (!ed) { S.modal = null; return ''; }
-    body = '<h2 id="dlgT">Change this line</h2><p><b>' + esc(ed.name) + '</b> · ×' + ed.needles + ' (' + esc(sourceLabel(ed)) + ')</p>' +
-      '<p class="muted">If this line is wrong, choose what was actually opened, or remove it.</p>' + itemPickList('editpick', ed.misread && !ed.fixed && !ed.edited ? null : ed.itemId) +
+    body = '<h2 id="dlgT">Change this line</h2><p><b>' + esc(ed.name) + '</b> is counted as <b>' + needlesWord(ed.needles) + '</b>. How many should it be?</p>' + needlePick('editpick', ed.needles) +
       '<div class="dlg-actions"><button class="ghost" data-act="' + (m.from === 'count' ? 'countback' : 'close') + '">Cancel</button><button data-act="removeentry">' + icon('x') + 'Remove this line</button></div>';
   } else if (m.type === 'summary') {
     var plist = pendingList(S);
@@ -1517,43 +1529,45 @@ function undoLast() {
   clearToast();
   renderMain();
 }
-function fixEntry(id, itemId) {
+function fixEntry(id, n) {
   var d = activeData(), e = findEntry(d, id);
   if (!e) return;
-  var it = ITEMS[itemId], wasUnread = !!e.unreadable;
-  log(wasUnread ? 'camera_identified' : 'camera_fixed', { true_item: e.trueItem, from_needles: e.needles === null ? 'unknown' : e.needles, to_item: itemId, to_needles: it.n, kind: wasUnread ? 'unreadable' : (e.misread ? 'misread' : 'ok') });
-  e.itemId = itemId;
-  e.name = it.name;
-  e.needles = it.n;
+  var item = e.trueItem || e.itemId, wasUnread = !!e.unreadable;
+  log(wasUnread ? 'camera_identified' : 'camera_fixed', { true_item: e.trueItem, from_needles: e.needles === null ? 'unknown' : e.needles, to_needles: n, kind: wasUnread ? 'unreadable' : (e.misread ? 'misread' : 'ok') });
+  e.itemId = item;
+  e.name = nameFor(item, n);
+  e.needles = n;
   e.status = 'confirmed';
   e.confirmedAt = now();
   e.order = ++orderSeq;
   if (wasUnread) { e.unreadable = false; e.identified = true; } else { e.fixed = true; }
   S.modal = null;
-  toast((wasUnread ? 'Added: +' : 'Fixed: +') + needlesWord(it.n) + ', ' + it.name);
+  toast((wasUnread ? 'Added: +' : 'Fixed: +') + needlesWord(n));
   renderModal();
   renderMain();
 }
-function addManual(itemId, pid) {
-  var it = ITEMS[itemId], d = activeData(), t = now();
-  var e = { id: ++S.seq, itemId: itemId, name: it.name, needles: it.n, source: 'manual', status: 'confirmed', createdAt: t, confirmedAt: t, simTime: S.phase === 'handoff' ? d.clock : fmt(simMin()), packetId: pid != null ? pid : null, fromFeed: pid != null, order: ++orderSeq };
+function addManual(n, pid) {
+  var d = activeData(), t = now();
+  var pk = pid != null ? d.packets.filter(function (x) { return x.id === pid; })[0] : null;
+  var itemId = pk ? pk.itemId : null;
+  var it = { name: nameFor(itemId, n), n: n };
+  var e = { id: ++S.seq, itemId: itemId, name: it.name, needles: n, source: 'manual', status: 'confirmed', createdAt: t, confirmedAt: t, simTime: S.phase === 'handoff' ? d.clock : fmt(simMin()), packetId: pid != null ? pid : null, fromFeed: pid != null, order: ++orderSeq };
   d.entries.push(e);
-  log('manual_add', { item: itemId, needles: it.n, via: pid != null ? 'camera view' : 'button' });
-  toast('Added: +' + needlesWord(it.n) + ', ' + it.name);
+  log('manual_add', { item: itemId || 'unnamed', needles: n, via: pid != null ? 'camera view' : 'button' });
+  toast('Added: +' + needlesWord(n));
   var fromCount = S.modal && S.modal.from === 'count';
   S.modal = null;
   renderModal();
   renderMain();
   if (fromCount) doCount();
 }
-function editEntry(id, itemId) {
+function editEntry(id, n) {
   var e = findEntry(S, id);
   if (!e) return;
-  var it = ITEMS[itemId];
-  log('entry_edited', { from_needles: e.needles, to_item: itemId, to_needles: it.n, source: e.source });
-  e.itemId = itemId;
+  var it = { name: nameFor(e.itemId, n), n: n };
+  log('entry_edited', { from_needles: e.needles, to_needles: n, source: e.source });
   e.name = it.name;
-  e.needles = it.n;
+  e.needles = n;
   e.edited = true;
   e.editedAt = now();
   var fromCount = S.modal && S.modal.from === 'count';
@@ -1726,7 +1740,7 @@ function submitProbe() {
     return;
   }
   S.probe.needles = String(parseInt(S.probe.needles, 10));
-  log('probe_submitted', { needles: S.probe.needles, recent: S.probe.recent, double_armed: S.probe.da, check_first: S.probe.check, confidence: S.probe.conf });
+  log('probe_submitted', { needles: S.probe.needles, waiting: S.probe.waiting, double_armed: S.probe.da, check_first: S.probe.check, confidence: S.probe.conf });
   S.phase = S.demo ? 'results' : 'survey';
   render();
   window.scrollTo(0, 0);
@@ -1795,7 +1809,7 @@ var ACT = {
   reject: function (el) { rejectEntry(el.getAttribute('data-id')); if (S.modal) { S.modal = null; renderModal(); } },
   undo: function () { undoLast(); },
   fix: function (el) { S.modal = { type: 'fix', id: el.getAttribute('data-id') }; log('camera_fix_opened'); renderModal(); },
-  fixpick: function (el) { fixEntry(S.modal.id, el.getAttribute('data-item')); },
+  fixpick: function (el) { fixEntry(S.modal.id, +el.getAttribute('data-n')); },
   add: function () {
     var from = S.modal && S.modal.type === 'count' ? 'count' : null;
     S.modal = { type: 'add', from: from };
@@ -1808,13 +1822,13 @@ var ACT = {
     log('manual_add_opened', { via: 'camera view' });
     renderModal();
   },
-  addpick: function (el) { addManual(el.getAttribute('data-item'), S.modal ? S.modal.pid : null); },
+  addpick: function (el) { addManual(+el.getAttribute('data-n'), S.modal ? S.modal.pid : null); },
   editrow: function (el) {
     S.modal = { type: 'edit', id: el.getAttribute('data-id'), from: el.getAttribute('data-from') || null };
     log('edit_opened');
     renderModal();
   },
-  editpick: function (el) { editEntry(S.modal.id, el.getAttribute('data-item')); },
+  editpick: function (el) { editEntry(S.modal.id, +el.getAttribute('data-n')); },
   removeentry: function () { removeEntry(S.modal.id); },
   summary: function () { S.modal = { type: 'summary' }; log('handoff_summary_opened'); renderModal(); },
   close: function () { S.modal = null; renderModal(); },
