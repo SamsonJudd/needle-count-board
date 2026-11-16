@@ -115,7 +115,7 @@ input[type=number]{font-size:22px;font-weight:600;max-width:160px}
 .b-head .ico{vertical-align:-3px;margin-right:4px}
 .b-mode{margin-left:auto;font-size:12px;font-weight:650;border-radius:999px;padding:4px 11px;background:var(--accent-bg);color:var(--accent-text);display:inline-flex;gap:6px;align-items:center}
 .b-tools{display:flex;flex-wrap:wrap;gap:8px;padding:10px 16px;border-bottom:1px solid var(--line)}
-.b-main{display:grid;grid-template-columns:300px minmax(0,1fr);gap:20px;padding:14px 16px 16px}
+.b-main{display:grid;grid-template-columns:340px minmax(0,1fr);gap:20px;padding:14px 16px 16px}
 .big-label{font-size:15px;color:var(--muted);font-weight:550}
 .big-num{font-size:96px;font-weight:650;line-height:1;letter-spacing:-.03em;margin:4px 0 4px;font-variant-numeric:tabular-nums}
 .big-sub{font-size:15px;color:var(--muted);margin-bottom:10px}
@@ -214,9 +214,9 @@ input[type=number]{font-size:22px;font-weight:600;max-width:160px}
 .ov{position:fixed;inset:0;background:rgba(18,24,33,.5);display:flex;align-items:center;justify-content:center;padding:20px;z-index:50}
 .ov.int{z-index:60;background:rgba(18,24,33,.66)}
 .dlg{background:#fff;border-radius:12px;max-width:560px;width:100%;max-height:calc(100vh - 40px);overflow:auto;padding:20px 22px;box-shadow:0 12px 40px rgba(0,0,0,.25)}
-.dlg.wide{max-width:800px}
+.dlg.wide{max-width:860px}
 .dlg h2{font-size:20px}
-.cmp{display:grid;grid-template-columns:minmax(0,1fr) 300px;gap:16px;align-items:start;margin:8px 0}
+.cmp{display:grid;grid-template-columns:minmax(0,1fr) 340px;gap:16px;align-items:start;margin:8px 0}
 .cmp .mini-log{margin:0}
 .pick{display:grid;grid-template-columns:1fr;gap:6px;margin:12px 0}
 .pick button{justify-content:space-between;min-height:44px;text-align:left}
@@ -318,7 +318,7 @@ summary{cursor:pointer;font-weight:600}
 .demo-btns button{white-space:nowrap}
 .foot{text-align:center;padding:6px 0 18px}
 .foot button{min-height:auto;padding:4px 10px;font-size:12px;color:var(--faint)}
-@media (max-width:1100px){.b-main{grid-template-columns:260px minmax(0,1fr)}}
+@media (max-width:1100px){.b-main{grid-template-columns:300px minmax(0,1fr)}}
 @media (max-width:1000px){.work{grid-template-columns:1fr}.b-main{grid-template-columns:1fr}.big-num{font-size:84px}.cmp{grid-template-columns:1fr}}
 @media (max-width:560px){.opts{grid-template-columns:1fr 1fr}.cart{grid-template-columns:1fr}.card{padding:22px 18px}.lk{grid-template-columns:1fr 1fr}.lk>div{grid-column:1/-1}}
 @media (max-height:820px) and (min-width:1001px){.rq-done{display:none}.rq-text{font-size:17px;margin:3px 0 6px}.cart{gap:5px}.pk{min-height:46px}.pk-body{padding:4px 10px;gap:3px}.work .col:first-child>.panel{padding:9px 13px}}
@@ -369,6 +369,8 @@ var SCEN = {
       { who: 'Scrub nurse', text: 'Can I get a 2-0 Vicryl?', items: ['v20'] },
       { who: 'Surgeon', text: '3-0 Monocryl, double-armed, please.', items: ['m30da'] },
       { who: 'Scrub nurse', text: 'I need a 4-0 Monocryl and a 3-0 Vicryl.', items: ['m40', 'v30'], interrupt: true },
+      { who: 'Surgeon', text: '3-0 V-Loc, double-armed, please.', items: ['vl30da'] },
+      { who: 'Scrub nurse', text: 'I need a 2-0 Vicryl and a 4-0 Monocryl.', items: ['v20', 'm40'] },
       { who: 'Surgeon', text: 'Closing now. I need a 4-0 Prolene double-armed, a 2-0 Silk, and a 0 Vicryl.', items: ['p40da', 's20', 'v0'], cam: { p40da: 'misread', s20: 'miss', v0: 'unreadable' }, pause: 7000 }
     ],
     interrupt: { who: 'Anesthesia', text: 'Can you grab a warming blanket? We need it now.', walk: 'You leave the board to get it' }
@@ -379,6 +381,8 @@ var SCEN = {
       { who: 'Scrub nurse', text: 'Can I get a 0 Vicryl?', items: ['v0'] },
       { who: 'Surgeon', text: '3-0 V-Loc, double-armed, please.', items: ['vl30da'] },
       { who: 'Scrub nurse', text: 'I need a 2-0 Silk and a 4-0 Monocryl.', items: ['s20', 'm40'], interrupt: true },
+      { who: 'Surgeon', text: '4-0 Prolene, double-armed, please.', items: ['p40da'] },
+      { who: 'Scrub nurse', text: 'I need a 0 Vicryl and a 2-0 Silk.', items: ['v0', 's20'] },
       { who: 'Surgeon', text: 'Closing now. I need a 3-0 Monocryl double-armed, a 3-0 Vicryl, and a 2-0 Vicryl.', items: ['m30da', 'v30', 'v20'], cam: { m30da: 'misread', v30: 'miss', v20: 'unreadable' }, pause: 7000 }
     ],
     interrupt: { who: 'Surgeon', text: 'Can you turn on the second overhead light? I can’t see.', walk: 'You leave the board to switch it on' }
@@ -527,7 +531,7 @@ function packetInner(id) {
     '<span class="pk-body"><span class="pk-name">' + esc(baseName(it)) + '</span>' +
     '<span class="pk-bot">' + (it.da ? '<span class="pk-da">Double-armed · 2 needles</span>' : '<span class="pk-meta">1 needle</span>') + '</span></span>';
 }
-var DRAPE = '<rect width="100%" height="100%" fill="#22566b"/><path d="M-10 40C60 30 120 52 260 38M-10 104C70 92 150 118 260 100" stroke="#2f6a82" stroke-width="5" fill="none" opacity=".55"/>';
+var DRAPE = '<rect width="100%" height="100%" fill="#22566b"/><path d="M-10 40C80 30 170 52 320 38M-10 104C90 92 200 118 320 100" stroke="#2f6a82" stroke-width="5" fill="none" opacity=".55"/>';
 function snapSVG(e) {
   var it = ITEMS[e.trueItem || e.itemId];
   var s = '<svg viewBox="0 0 132 88" width="132" height="88" role="img" aria-label="Camera snapshot of the packet">' + DRAPE + '<g transform="rotate(-5 66 44)">';
@@ -556,7 +560,7 @@ function snapSVG(e) {
   }
   return s + '</g></svg>';
 }
-function slotPos(i) { return { cx: 30 + (i % 4) * 60, cy: 38 + Math.floor(i / 4) * 58 }; }
+function slotPos(i) { return { cx: 30 + (i % 5) * 60, cy: 38 + Math.floor(i / 5) * 58 }; }
 function tilt(id) { return ((Math.imul(id + 11, 2654435761) >>> 0) % 13) - 6; }
 function reconcile() {
   var conf = S.entries.filter(function (e) { return e.status === 'confirmed'; });
@@ -588,9 +592,9 @@ function packetView(d, p, R) {
 function feedSVG(d, clickable) {
   var R = d === S ? reconcile() : null;
   var list = d.packets.slice(0, 16);
-  var H = 66 + (Math.max(2, Math.ceil(list.length / 4)) - 1) * 58;
-  var out = '<svg viewBox="0 0 240 ' + H + '" role="img" aria-label="Camera view of the back table">' + DRAPE;
-  if (!list.length) out += '<text x="120" y="' + (H / 2 + 3) + '" text-anchor="middle" font-size="9.5" fill="#cfe0ea" opacity=".8" font-family="' + FONT + '">Nothing opened yet</text>';
+  var H = 66 + (Math.max(2, Math.ceil(list.length / 5)) - 1) * 58;
+  var out = '<svg viewBox="0 0 300 ' + H + '" role="img" aria-label="Camera view of the back table">' + DRAPE;
+  if (!list.length) out += '<text x="150" y="' + (H / 2 + 3) + '" text-anchor="middle" font-size="9.5" fill="#cfe0ea" opacity=".8" font-family="' + FONT + '">Nothing opened yet</text>';
   list.forEach(function (p, i) {
     var pos = slotPos(i), cx = pos.cx, cy = pos.cy, it = ITEMS[p.itemId], v = packetView(d, p, R);
     var px = cx - 23, py = cy - 12.5;
@@ -816,10 +820,10 @@ function introHTML() {
   if (cam) {
     steps += '<li>A camera sees the packet and puts a card on the count board. Read the card. Click <b>Correct</b> if it’s right, or <b>Not right</b> to fix it.</li>' +
       '<li>The camera can be wrong or miss a packet, so the count is still yours. A packet with <b>no box</b> in the camera picture hasn’t been counted. Click it to add it.</li>' +
-      '<li>When the nurse calls out a count, click <b>Start count check</b> to compare her number with the board.</li>';
+      '<li>When the nurse calls out a count, click <b>Start count check</b> to compare that count with the board.</li>';
   } else {
     steps += '<li>Write it on the <b>whiteboard</b> yourself. Click <b>+1</b>, or <b>+2</b> for a double-armed packet.</li>' +
-      '<li>When the nurse calls out a count, click <b>Start count check</b> and say whether the whiteboard matches her number.</li>';
+      '<li>When the nurse calls out a count, click <b>Start count check</b> and say whether the whiteboard matches that count.</li>';
   }
   return '<div class="screen"><div class="card">' +
     '<p class="eyebrow">' + esc(sc.label) + ' · ' + esc(MODES[S.mode].label) + '</p>' +
