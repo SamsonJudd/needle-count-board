@@ -1121,11 +1121,13 @@ function computeMetrics() {
       if (!mp || !ms) M.misread = 'not reached';
       else {
         var ml = R.linked[mp.id], mok = ml && ml.needles === mp.n;
-        if (mok && ml === ms && ms.fixed) M.misread = 'caught at the suggestion';
-        else if (mok && ms.status === 'rejected') M.misread = 'caught at the suggestion (rejected, then added)';
-        else if (mok) M.misread = (ml.editedAt || ml.confirmedAt || ml.createdAt) <= reqAt ? 'confirmed wrong, corrected before the count' : 'confirmed wrong, corrected during the count check';
+        var mAt = mok ? rightSince(ml, mp.n) : null, mWhen = mAt <= reqAt ? 'before the count' : 'during the count check';
+        var mFirst = ms.sets && ms.sets[0], mAtCard = !!(ms.fixed && mFirst && mFirst.via === 'fix' && mFirst.n === mp.n);
+        if (mok && ml === ms && mAtCard && mAt === mFirst.t) M.misread = 'caught at the suggestion';
+        else if (mok && ms.status === 'rejected') M.misread = mAt <= reqAt ? 'caught at the suggestion (rejected, then added)' : 'rejected at the suggestion, added during the count check';
+        else if (mok) M.misread = (ms.fixed && !mAtCard ? 'pressed Not right but kept the wrong count, corrected ' : 'confirmed wrong, corrected ') + mWhen;
         else if (ms.status === 'pending') M.misread = 'left pending';
-        else M.misread = 'not caught (wrong count stayed on the board)';
+        else M.misread = ms.fixed && !mAtCard ? 'not caught (pressed Not right but kept the wrong count)' : 'not caught (wrong count stayed on the board)';
       }
       var xp = S.packets.filter(function (p) { return p.kind === 'miss'; })[0];
       if (!xp) M.miss = 'not reached';
@@ -1138,7 +1140,12 @@ function computeMetrics() {
       var us = S.entries.filter(function (e) { return e.wasUnreadable; })[0];
       if (!up || !us) M.unread = 'not reached';
       else if (us.status === 'pending') M.unread = 'left unidentified';
-      else if (us.status === 'confirmed') M.unread = us.needles === up.n ? 'identified correctly' : 'identified wrong (wrong needle count)';
+      else if (us.status === 'confirmed') {
+        var uFirst = us.sets && us.sets[0], uOk = us.needles === up.n, uAt = uOk ? rightSince(us, up.n) : null;
+        if (uOk && (!uFirst || uAt === uFirst.t)) M.unread = 'identified correctly';
+        else if (uOk) M.unread = 'identified wrong, corrected ' + (uAt <= reqAt ? 'before the count' : 'during the count check');
+        else M.unread = 'identified wrong (wrong needle count)';
+      }
       else { var ul = R.linked[up.id]; M.unread = ul && ul.needles === up.n ? 'dismissed, then added correctly' : 'dismissed (not counted)'; }
     }
     var camE = S.entries.filter(function (e) { return e.source === 'camera'; });
@@ -1176,6 +1183,11 @@ function computeMetrics() {
     M.comfort = S.survey.comfort || null;
   }
   return M;
+}
+function rightSince(e, n) {
+  var h = e.sets || [], cur = h.length ? h[0].from : e.needles, t = cur === n ? (e.confirmedAt || e.createdAt) : null;
+  h.forEach(function (x) { if (x.n === n && cur !== n) t = x.t; if (x.n !== n) t = null; cur = x.n; });
+  return t;
 }
 function sheetRow(M) {
   var cam = S.mode === 'camera';
@@ -1558,6 +1570,7 @@ function fixEntry(id, n) {
   if (!e) return;
   var item = e.trueItem || e.itemId, wasUnread = !!e.unreadable;
   log(wasUnread ? 'camera_identified' : 'camera_fixed', { true_item: e.trueItem, from_needles: e.needles === null ? 'unknown' : e.needles, to_needles: n, kind: wasUnread ? 'unreadable' : (e.misread ? 'misread' : 'ok') });
+  (e.sets = e.sets || []).push({ t: now(), from: e.needles, n: n, via: 'fix' });
   e.itemId = item;
   e.name = nameFor(item, n);
   e.needles = n;
@@ -1590,6 +1603,7 @@ function editEntry(id, n) {
   if (!e) return;
   var it = { name: nameFor(e.itemId, n), n: n };
   log('entry_edited', { from_needles: e.needles, to_needles: n, source: e.source });
+  (e.sets = e.sets || []).push({ t: now(), from: e.needles, n: n, via: 'edit' });
   e.name = it.name;
   e.needles = n;
   e.edited = true;
