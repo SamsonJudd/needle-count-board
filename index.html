@@ -1294,6 +1294,8 @@ function resultsText() {
   if (M.probe) {
     L.push('Handoff review time: ' + secStr(M.reviewSeconds) + ' | Awareness score: ' + M.probeScore + ' of 4');
     M.probe.forEach(function (p, i) { L.push('Q' + (i + 1) + ': ' + p.answer + (p.correct === null ? '' : (p.correct ? ' (correct)' : ' (incorrect)'))); });
+  }
+  if (M.susItems && !S.demo) {
     L.push('Ease: ' + (M.seq || '-') + ' of 7 | Mental demand: ' + (M.demand || '-') + ' of 7 | SUS: ' + (M.sus === null ? '-' : M.sus) + ' | SUS answers 1-10: ' + M.susItems.join(' '));
     if (cam) L.push('Camera statements (1-5): rely ' + (M.trust || '-') + ' | knew what was counted ' + (M.aware || '-') + ' | comfortable in my OR ' + (M.comfort || '-'));
   }
